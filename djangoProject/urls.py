@@ -15,10 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from lxml.ElementInclude import include
 
+admin.AdminSite.site_header = 'All1Zed Ticketing System'
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('buses/', include('buses.urls')),
+    path('auth/', include('djoser.urls')),
+    path('auth/', include('djoser.urls.jwt')),
+    path('__debug__/', include('debug_toolbar.urls')),
 
 ]

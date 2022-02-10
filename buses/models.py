@@ -2,13 +2,15 @@ from django.db import models
 
 
 class BusCompany(models.Model):
-    name = models.CharField(max_length=50)
+    company_name = models.CharField(max_length=50)
+    company_phone_number = models.CharField(max_length=50)
+    company_email = models.EmailField(max_length=64)
     address = models.CharField(max_length=100)
     number_of_buses = models.IntegerField(default=1)
     company_logo = models.ImageField()
 
     def __str__(self):
-        return self.name
+        return self.company_name
 
     class Meta:
         verbose_name_plural = 'Bus Companies'
@@ -25,7 +27,7 @@ class Passenger(models.Model):
 
 class Route(models.Model):
     """A route class e.g from Lusaka to Livingstone"""
-    from_ = models.CharField(max_length=50)
+    starting_place = models.CharField(max_length=50)
     to = models.CharField(max_length=50)
     full_route_name = models.CharField(max_length=100)
     time = models.TimeField()
@@ -57,7 +59,6 @@ class Ticket(models.Model):
     date_bought = models.DateField()
     passenger_first_name = models.CharField(max_length=50)
     passenger_last_name = models.CharField(max_length=50)
-    passenger_full_name = passenger_first_name + passenger_last_name
     departure_date = models.DateField()
     departure_time = models.TimeField()
     route = models.ForeignKey(Route, on_delete=models.CASCADE)
