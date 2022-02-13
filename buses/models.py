@@ -1,36 +1,32 @@
-from distutils.command.upload import upload
 from django.db import models
 
 
-class BusCompany(models.Model):
-    """A company that owns bus(s)
+# class BusCompany(models.Model):
+#     """A company that owns bus(s)
 
-    Args:
-        models ([type]): [description]
+#     Args:
+#         models ([type]): [description]
 
-    Returns:
-        [type]: [description]
-    """
-    company_name = models.CharField(max_length=50)
-    company_phone_number = models.CharField(max_length=50)
-    company_email = models.EmailField(max_length=64)
-    address = models.CharField(max_length=100)
+#     Returns:
+#         [type]: [description]
+#     """
+#     company_name = models.CharField(max_length=50)
+#     company_phone_number = models.CharField(max_length=50)
+#     company_email = models.EmailField(max_length=64)
+#     address = models.CharField(max_length=100)
 
-    def __str__(self):
-        return self.company_name
-
-    class Meta:
-        verbose_name_plural = 'Bus Companies'
+#     def __str__(self):
+#         return self.company_name
 
 
-class BusCompanyImage(models.Model):
-    """An image or logo of a bus company. 
+# class BusCompanyImage(models.Model):
+#     """An image or logo of a bus company. 
 
-    Args:
-        models ([type]): [description]
-    """
-    bus_company = models.ForeignKey(BusCompany, on_delete=models.CASCADE, related_name='images')
-    image = models.ImageField(upload_to='tickets/buscompanies')
+#     Args:
+#         models ([type]): [description]
+#     """
+#     bus_company = models.ForeignKey(BusCompany, on_delete=models.CASCADE, related_name='images')
+#     image = models.ImageField(upload_to='tickets/buscompanies')
 
 
 class Passenger(models.Model):
@@ -65,8 +61,11 @@ class Bus(models.Model):
     """A bus representation"""
     name = models.CharField(max_length=50)
     number_of_seats = models.IntegerField()
-    image = models.ImageField()
+    image = models.ImageField(blank=True, null=True)
     routes = models.ManyToManyField(Route, related_name='buses')
+
+    def __str__(self):
+        return self.name
 
 
 class BusImage(models.Model):
@@ -100,7 +99,7 @@ class Ticket(models.Model):
     Returns:
         [type]: [description]
     """
-    ticket_number = models.CharField(max_length=20)
+    ticket_number = models.CharField(max_length=20, primary_key=True)
     paid = models.BooleanField()
     bus = models.ForeignKey(Bus, on_delete=models.CASCADE)
     date_bought = models.DateField()

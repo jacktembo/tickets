@@ -20,5 +20,11 @@ from . import views
 urlpatterns = [
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.jwt')),
-
+    path('passenger/', views.Passenger.as_view()),
+    path('', views.Buses.as_view()),
+    path('<int:pk>', views.BusDetail.as_view()),
+    path('routes/', views.Routes.as_view()),
+    path('routes/<int:pk>', views.RouteDetail.as_view()),
+    path('tickets/', views.Tickets.as_view()),
+    path('tickets/<int:pk>', views.TicketDetail.as_view()),
 ]

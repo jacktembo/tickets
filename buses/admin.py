@@ -1,6 +1,4 @@
-import site
 from django.contrib import admin
-from .models  import *
+from .models import *
 
-admin.site.register(BusCompany)
-admin.site.register(Route)
+admin.site.register([Bus, Passenger, Ticket, Route, Seat])
