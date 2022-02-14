@@ -1,32 +1,38 @@
+from django.contrib.auth.models import User
 from django.db import models
 
 
-# class BusCompany(models.Model):
-#     """A company that owns bus(s)
+class BusCompany(models.Model):
+    """A company that owns bus(s)
 
-#     Args:
-#         models ([type]): [description]
+    Args:
+        models ([type]): [description]
 
-#     Returns:
-#         [type]: [description]
-#     """
-#     company_name = models.CharField(max_length=50)
-#     company_phone_number = models.CharField(max_length=50)
-#     company_email = models.EmailField(max_length=64)
-#     address = models.CharField(max_length=100)
+    Returns:
+        [type]: [description]
+    """
+    user = models.ForeignKey(User, on_delete=models.CASCADE,
+                             verbose_name='Login Username')  # Admin user account for the Bus Company.
+    company_name = models.CharField(max_length=50)
+    company_phone_number = models.CharField(max_length=50)
+    company_email = models.EmailField(max_length=64)
+    address = models.CharField(max_length=100)
 
-#     def __str__(self):
-#         return self.company_name
+    class Meta:
+        verbose_name_plural = 'Bus Companies'
+
+    def __str__(self):
+        return self.company_name
 
 
-# class BusCompanyImage(models.Model):
-#     """An image or logo of a bus company. 
+class BusCompanyImage(models.Model):
+    """An image or logo of a bus company.
 
-#     Args:
-#         models ([type]): [description]
-#     """
-#     bus_company = models.ForeignKey(BusCompany, on_delete=models.CASCADE, related_name='images')
-#     image = models.ImageField(upload_to='tickets/buscompanies')
+    Args:
+        models ([type]): [description]
+    """
+    bus_company = models.ForeignKey(BusCompany, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='tickets/buscompanies')
 
 
 class Passenger(models.Model):
@@ -46,8 +52,32 @@ class Passenger(models.Model):
         return f'{self.first_name} {self.last_name}'
 
 
+class Bus(models.Model):
+    """A bus representation"""
+    bus_company = models.ForeignKey(BusCompany, on_delete=models.CASCADE, related_name='buses')
+    bus_full_name = models.CharField(max_length=50)
+    bus_short_name = models.CharField(max_length=20, primary_key=True, editable=False)
+    number_of_seats = models.IntegerField()
+
+    class Meta:
+        verbose_name_plural = 'Buses'
+
+    def __str__(self):
+        return self.bus_full_name
+
+    def save(self, *args, **kwargs):
+        """
+        Overriding the save method to create calculated field values.
+        """
+        query = Bus.objects.filter(bus_company=self.bus_company).count()
+        # Computing the bus unique identifier below
+        self.bus_short_name = (self.bus_company.company_name[:4] + str(query + 1)).lower()
+        super(Bus, self).save(*args, **kwargs)
+
+
 class Route(models.Model):
     """A route class e.g from Lusaka to Livingstone"""
+    bus = models.ForeignKey(Bus, on_delete=models.CASCADE, related_name='route')
     starting_place = models.CharField(max_length=50)
     destination = models.CharField(max_length=50)
     time = models.TimeField()
@@ -57,24 +87,13 @@ class Route(models.Model):
         return f'{self.starting_place} to {self.destination}'
 
 
-class Bus(models.Model):
-    """A bus representation"""
-    name = models.CharField(max_length=50)
-    number_of_seats = models.IntegerField()
-    image = models.ImageField(blank=True, null=True)
-    routes = models.ManyToManyField(Route, related_name='buses')
-
-    def __str__(self):
-        return self.name
-
-
 class BusImage(models.Model):
     """The image(s) of a bus. A bus can have multliple images.
 
     Args:
         models ([type]): [description]
     """
-    bus = models.ForeignKey(Bus, on_delete=models.CASCADE, related_name='images')
+    bus = models.ForeignKey(Bus, on_delete=models.CASCADE, related_name='image')
     image = models.ImageField(upload_to='tickets/buses')
 
 

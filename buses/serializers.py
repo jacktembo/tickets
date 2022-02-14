@@ -12,9 +12,7 @@ from .models import *
 class BusSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bus
-        fields = [
-            'id', 'name', 'number_of_seats', 'image', 'routes'
-        ]
+        fields = '__all__'
 
 
 # class BusCompanyImageSerializer(serializers.ModelSerializer):

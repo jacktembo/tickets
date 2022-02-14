@@ -27,4 +27,7 @@ urlpatterns = [
     path('routes/<int:pk>', views.RouteDetail.as_view()),
     path('tickets/', views.Tickets.as_view()),
     path('tickets/<int:pk>', views.TicketDetail.as_view()),
+    path('price/<str:bus_short_name>/<int:route_id>', views.calculate_ticket_price),
+    path('routes/<str:bus_short_name>/', views.find_bus_routes),
+    path('<str:bus_short_name>/times', views.find_departure_times),
 ]

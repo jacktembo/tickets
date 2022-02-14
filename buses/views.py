@@ -111,3 +111,27 @@ class TicketDetail(APIView):
         ticket = get_object_or_404(Ticket, pk=pk)
         ticket.delete()
         return Response("I tem was deleted", status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['GET'])
+def calculate_ticket_price(request, bus_short_name, route_id):
+    bus = get_object_or_404(Bus, bus_short_name=bus_short_name)
+    route = get_object_or_404(Route, id=route_id, bus=bus)
+
+    return Response(route.price)
+
+
+@api_view()
+def find_bus_routes(request, bus_short_name):
+    routes = get_list_or_404(Route, bus=bus_short_name)
+    serializer = RouteSerializer(routes, many=True)
+    return Response(serializer.data)
+
+
+@api_view()
+def find_departure_times(request, bus_short_name):
+    times = []
+    routes = get_list_or_404(Route, bus=bus_short_name)
+    for route in routes:
+        times.append(route.time.strftime("%H:%M"))
+    return Response(times)
