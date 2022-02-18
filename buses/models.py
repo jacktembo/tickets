@@ -1,5 +1,9 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.shortcuts import get_object_or_404, get_list_or_404
+import secrets
+import string
+from datetime import date, datetime, timedelta, time
 
 
 class BusCompany(models.Model):
@@ -61,7 +65,8 @@ class Bus(models.Model):
 
     class Meta:
         verbose_name_plural = 'Buses'
-
+    def make_fully_booked(self):
+        pass
     def __str__(self):
         return self.bus_full_name
 
@@ -118,10 +123,9 @@ class Ticket(models.Model):
     Returns:
         [type]: [description]
     """
-    ticket_number = models.CharField(max_length=20, primary_key=True)
-    paid = models.BooleanField()
+    ticket_number = models.CharField(max_length=20, primary_key=True, editable=False)
     bus = models.ForeignKey(Bus, on_delete=models.CASCADE)
-    date_bought = models.DateField()
+    date_bought = models.DateField(auto_now_add=True)
     passenger_first_name = models.CharField(max_length=50)
     passenger_last_name = models.CharField(max_length=50)
     departure_date = models.DateField()
@@ -131,3 +135,34 @@ class Ticket(models.Model):
 
     def __str__(self):
         return self.ticket_number
+
+    def save(self, *args, **kwargs):
+        # bus = Bus.objects.get(bus_short_name=self.route.bus.bus_short_name)
+        alphabet = string.ascii_letters + string.digits
+        ticket_number = ''.join(secrets.choice(alphabet) for i in range(10))
+        self.ticket_number = ticket_number
+        super(Ticket, self).save(*args, **kwargs)
+
+
+class FullyBookedBus(models.Model):
+    """
+    Represents a bus that has been marked as fully booked by the admin, for a specified
+    date and time.
+    """
+    bus = models.ForeignKey(Bus, on_delete=models.CASCADE)
+    departure_date = models.DateField()
+    departure_time = models.TimeField()
+
+    def __str__(self):
+        return self.bus
+
+
+class OfflineSoldSeat(models.Model):
+    """
+    A seat that has been marked as sold at a station by the admin.
+    """
+    bus = models.ForeignKey(Bus, on_delete=models.CASCADE)
+    seat_number = models.IntegerField()
+    departure_date = models.DateField()
+    departure_time = models.TimeField()
+

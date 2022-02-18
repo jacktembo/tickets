@@ -3,10 +3,10 @@ from rest_framework import serializers
 from .models import *
 
 
-# class BusCompanySerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = BusCompany
-#         fields = '__all__'
+class BusCompanySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BusCompany
+        fields = '__all__'
 
 
 class BusSerializer(serializers.ModelSerializer):
@@ -34,7 +34,7 @@ class PassengerSerializer(serializers.ModelSerializer):
 class RouteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Route
-        fields = '__all__'
+        exclude = ('bus',)
 
     route_full_name = serializers.SerializerMethodField(method_name='full_route_name')
 
@@ -51,3 +51,6 @@ class TicketSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ticket
         fields = '__all__'
+    # route = RouteSerializer()
+    # bus = BusSerializer()
+    # bus_company = BusCompanySerializer()

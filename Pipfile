@@ -65,6 +65,7 @@ PyQt5 = "==5.15.2"
 PyQt5-sip = "==12.8.1"
 django-restframework = "*"
 openpyxl = "*"
+qrcode = "*"
 
 [dev-packages]
 

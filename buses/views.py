@@ -7,6 +7,7 @@ from rest_framework import status
 from decimal import Decimal
 from .models import *
 from .serializers import *
+from rest_framework.generics import *
 
 
 class Passenger(APIView):
@@ -113,12 +114,12 @@ class TicketDetail(APIView):
         return Response("I tem was deleted", status.HTTP_204_NO_CONTENT)
 
 
-@api_view(['GET'])
-def calculate_ticket_price(request, bus_short_name, route_id):
-    bus = get_object_or_404(Bus, bus_short_name=bus_short_name)
-    route = get_object_or_404(Route, id=route_id, bus=bus)
+class CalculateTicketPrice(APIView):
+    def get(self, bus_short_name, route_id):
+        bus = get_object_or_404(Bus, bus_short_name=bus_short_name)
+        route = get_object_or_404(Route, id=route_id, bus=bus)
 
-    return Response(route.price)
+        return Response(route.price)
 
 
 @api_view()
@@ -135,3 +136,79 @@ def find_departure_times(request, bus_short_name):
     for route in routes:
         times.append(route.time.strftime("%H:%M"))
     return Response(times)
+
+
+@api_view()
+def tickets_sold(request, bus_short_name, departure_date, departure_time):
+    """
+    This designates the queryset for all the tickets sold for the specified bus on a
+    specified date and time.
+    """
+    bus = get_object_or_404(Bus, pk=bus_short_name)
+    tickets = Ticket.objects.filter(bus=bus, departure_date=date.fromisoformat(departure_date),
+                                    departure_time=time.fromisoformat(departure_time))
+    tickets = TicketSerializer(tickets, many=True)
+    return Response(tickets.data)  # Returning a JSON list of sold tickets for a bus.
+
+
+@api_view()
+def number_of_seats_taken(request, bus_short_name, departure_date, departure_time):
+    """The total number of tickets sold for a specified bus at a specified time"""
+    bus = get_object_or_404(Bus, pk=bus_short_name)
+    tickets = Ticket.objects.filter(bus=bus, departure_date=date.fromisoformat(departure_date),
+                                    departure_time=time.fromisoformat(departure_time))
+    total_number_sold = tickets.count()
+    return Response(total_number_sold)
+
+
+@api_view()
+def seats_taken(request, bus_short_name, departure_date, departure_time):
+    """Getting the list of seats that are already taken for a specified date and time"""
+    seats = []
+    tickets = Ticket.objects.filter(bus=bus_short_name, departure_date=date.fromisoformat(departure_date),
+                                    departure_time=time.fromisoformat(departure_time))
+    for ticket in tickets:
+        seats.append(ticket.seat_number)
+    return Response(seats)
+
+
+@api_view()
+def is_fully_booked(request, bus_short_name: Bus, departure_date, departure_time):
+    """
+    Designates whether the specified bus is fully booked for the specified date and time.
+    """
+    if number_of_seats_taken(bus_short_name=bus_short_name, departure_date=departure_date,
+                             departure_time=departure_time) == bus_short_name.number_of_seats:
+        return Response('fully booked')
+    else:
+        return Response('not fully booked')
+
+
+@api_view()
+def is_seat_available(request, seat_number, bus_short_name, departure_date, departure_time):
+    """Designates whether the specified seat number has already been taken for
+    the specified date and time"""
+    seats = []
+    tickets = Ticket.objects.filter(bus=bus_short_name, departure_date=date.fromisoformat(departure_date),
+                                    departure_time=time.fromisoformat(departure_time))
+    for ticket in tickets:
+        seats.append(ticket.seat_number)
+    if seat_number not in seats:
+        return Response('available')
+    else:
+        return Response('taken')
+
+
+@api_view()
+def seats_available(request, bus_short_name, departure_date, departure_time):
+    seats = []
+    bus = get_object_or_404(Bus, bus_short_name=bus_short_name)  # Important for review later.
+    tickets = Ticket.objects.filter(bus=bus_short_name, departure_date=date.fromisoformat(departure_date),
+                                    departure_time=time.fromisoformat(departure_time))
+    for ticket in tickets:
+        seats.append(ticket.seat_number)
+    seats_available = []
+    for number in range(1, bus.number_of_seats):
+        if number not in seats:
+            seats_available.append(number)
+        return Response(seats_available)

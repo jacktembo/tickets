@@ -22,12 +22,14 @@ urlpatterns = [
     path('auth/', include('djoser.urls.jwt')),
     path('passenger/', views.Passenger.as_view()),
     path('', views.Buses.as_view()),
-    path('<int:pk>', views.BusDetail.as_view()),
+    path('<str:pk>', views.BusDetail.as_view()),
     path('routes/', views.Routes.as_view()),
     path('routes/<int:pk>', views.RouteDetail.as_view()),
     path('tickets/', views.Tickets.as_view()),
-    path('tickets/<int:pk>', views.TicketDetail.as_view()),
-    path('price/<str:bus_short_name>/<int:route_id>', views.calculate_ticket_price),
+    path('tickets/<str:pk>', views.TicketDetail.as_view()),
+    path('price/<str:bus_short_name>/<int:route_id>', views.CalculateTicketPrice.as_view()),
     path('routes/<str:bus_short_name>/', views.find_bus_routes),
     path('<str:bus_short_name>/times', views.find_departure_times),
+    path('tickets-sold/<str:bus_short_name>/<str:departure_date>/<str:departure_time>/', views.tickets_sold),
+
 ]
