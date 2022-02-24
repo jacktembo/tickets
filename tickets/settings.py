@@ -13,6 +13,8 @@ from datetime import timedelta
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+import rest_framework.pagination
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -39,9 +41,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'accounts',
     'buses',
+    'events',
     'core',
     'rest_framework',
     'djoser',
+    'django_filters',
     'debug_toolbar',
 ]
 
@@ -82,8 +86,12 @@ WSGI_APPLICATION = 'tickets.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'tickets',
+        'USER': 'root',
+        'PASSWORD': '30970084',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
     }
 }
 
@@ -134,7 +142,8 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
-    'COERCE_DECIMAL_TO_STRING': False
+    'COERCE_DECIMAL_TO_STRING': False,
+    'PAGE_SIZE': 10,
 }
 
 SIMPLE_JWT = {

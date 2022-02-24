@@ -22,7 +22,7 @@ admin.AdminSite.site_title = 'All1Zed Tickets'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('buses/', include('buses.urls')),
+    path('bus-tickets/', include('buses.urls')),
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.jwt')),
     path('auth/login/', TokenObtainPairView.as_view()),
