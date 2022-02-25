@@ -68,6 +68,7 @@ openpyxl = "*"
 qrcode = "*"
 mysqlclient = "*"
 django-filter = "*"
+django-ckeditor = "*"
 
 [dev-packages]
 
