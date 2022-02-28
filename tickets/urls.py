@@ -15,11 +15,10 @@ Including another URLconf
 """
 from djoser.views import TokenCreateView, TokenDestroyView
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from rest_framework_simplejwt.views import TokenObtainPairView
 admin.AdminSite.site_header = 'All1Zed Ticketing System - Administration'
 admin.AdminSite.site_title = 'All1Zed Tickets'
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('bus-tickets/', include('buses.urls')),
@@ -27,6 +26,7 @@ urlpatterns = [
     path('auth/', include('djoser.urls.jwt')),
     path('auth/login/', TokenObtainPairView.as_view()),
     path('__debug__/', include('debug_toolbar.urls')),
+    re_path(r'^ckeditor/', include('ckeditor_uploader.urls')),
 
 ]
 

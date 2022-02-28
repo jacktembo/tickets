@@ -123,13 +123,13 @@ class Ticket(models.Model):
     Returns:
         [type]: [description]
     """
-    ticket_number = models.CharField(max_length=20, primary_key=True, editable=False)
+    ticket_number = models.CharField(max_length=20, primary_key=True, editable=False, unique=True)
     bus = models.ForeignKey(Bus, on_delete=models.CASCADE)
     date_bought = models.DateField(auto_now_add=True)
+    passenger_phone = models.CharField(max_length=12)
     passenger_first_name = models.CharField(max_length=50)
     passenger_last_name = models.CharField(max_length=50)
     departure_date = models.DateField()
-    departure_time = models.TimeField()
     route = models.ForeignKey(Route, on_delete=models.CASCADE)
     seat_number = models.IntegerField()
 

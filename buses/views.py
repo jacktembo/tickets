@@ -72,11 +72,12 @@ class RouteViewSet(ModelViewSet):
         return Response("I tem was deleted", status.HTTP_204_NO_CONTENT)
 
 
-class Tickets(APIView):
-    def get(self, request):
-        ticket = get_list_or_404(Ticket)
-        serializer = TicketSerializer(ticket, many=True)
-        return Response(serializer.data)
+class Tickets(ListCreateAPIView):
+    def get_queryset(self):
+        return Ticket.objects.all()
+
+    def get_serializer_class(self):
+        return TicketSerializer
 
 
 class CalculateTicketPrice(RetrieveAPIView):
@@ -123,7 +124,7 @@ class TicketsSold(ListAPIView):
     queryset = Ticket.objects.all()
     serializer_class = TicketSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['bus', 'departure_date', 'departure_time']
+    filterset_fields = ['bus', 'departure_date']
 
 
 class NumberOfSeatsTaken(APIView):
