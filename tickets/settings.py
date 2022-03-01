@@ -90,9 +90,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'tickets',
-        'USER': 'root',
-        'PASSWORD': '30970084',
-        'HOST': '127.0.0.1',
+        'USER': 'allzedco_jack',
+        'PASSWORD': 'Zambia2022!',
+        'HOST': 'node225.namehero.net',
         'PORT': '3306',
     }
 }
