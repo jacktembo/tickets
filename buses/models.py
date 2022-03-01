@@ -1,3 +1,4 @@
+from django.conf.global_settings import AUTH_USER_MODEL
 from django.contrib.auth.models import User
 from django.db import models
 from django.shortcuts import get_object_or_404, get_list_or_404
@@ -15,7 +16,7 @@ class BusCompany(models.Model):
     Returns:
         [type]: [description]
     """
-    user = models.ForeignKey(User, on_delete=models.CASCADE,
+    user = models.OneToOneField(User, on_delete=models.CASCADE,
                              verbose_name='Login Username')  # Admin user account for the Bus Company.
     company_name = models.CharField(max_length=50)
     company_phone_number = models.CharField(max_length=50)
@@ -35,8 +36,8 @@ class BusCompanyImage(models.Model):
     Args:
         models ([type]): [description]
     """
-    bus_company = models.ForeignKey(BusCompany, on_delete=models.CASCADE, related_name='images')
-    image = models.ImageField(upload_to='tickets/buscompanies')
+    bus_company = models.OneToOneField(BusCompany, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='tickets/buscompanies', verbose_name='Upload Company Logo')
 
 
 class Passenger(models.Model):
@@ -98,8 +99,8 @@ class BusImage(models.Model):
     Args:
         models ([type]): [description]
     """
-    bus = models.ForeignKey(Bus, on_delete=models.CASCADE, related_name='image')
-    image = models.ImageField(upload_to='tickets/buses')
+    bus = models.OneToOneField(Bus, on_delete=models.CASCADE, related_name='image')
+    image = models.ImageField(upload_to='tickets/buses', verbose_name='Upload Bus Image')
 
 
 class Seat(models.Model):
