@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/4./0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
+import os
 from datetime import timedelta
 from pathlib import Path
 
@@ -88,12 +89,8 @@ WSGI_APPLICATION = 'tickets.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'tickets',
-        'USER': 'allzedco_jack',
-        'PASSWORD': 'Zambia2022!',
-        'HOST': 'node225.namehero.net',
-        'PORT': '3306',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
 
