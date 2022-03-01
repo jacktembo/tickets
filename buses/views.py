@@ -1,4 +1,3 @@
-import dbus.service
 from django.contrib.auth.models import User
 from django.shortcuts import render, get_object_or_404, get_list_or_404
 from django.views.decorators.clickjacking import xframe_options_exempt
@@ -129,7 +128,7 @@ class TicketsSold(ListAPIView):
 
 class NumberOfSeatsTaken(APIView):
     def get(self):
-        bus = dbus.service.Object.getT(pk=self.request.query_params.get('bus_short_name', None))
+        bus = bus.objects.get(pk=self.request.query_params.get('bus_short_name', None))
         tickets = Ticket.objects.filter(bus=bus, departure_date=self.request.query_params.get('departure_date', None),
                                         departure_time=self.request.query_params.get('departure-time', None))
         total_number = tickets.count()
