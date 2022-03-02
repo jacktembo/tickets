@@ -12,7 +12,8 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 import os
 from datetime import timedelta
 from pathlib import Path
-
+# import pymysql
+# pymysql.install_as_MySQLdb()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 import rest_framework.pagination
 
@@ -90,8 +91,14 @@ WSGI_APPLICATION = 'tickets.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': 'allzedco_bustickets',
+        'ENGINE': 'mysql.connector.django',
+        'USER': 'allzedco_root',
+        'PASSWORD': 'Zambia2022!',
+        'HOST': 'node225.namehero.net',
+        'OPTIONS': {
+          'autocommit': True,
+        },
     }
 }
 
