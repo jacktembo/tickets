@@ -1,4 +1,0 @@
-GET https://all1zed-tickets.herokuapp.com/bus-tickets
-Accept: application/json
-
-###
