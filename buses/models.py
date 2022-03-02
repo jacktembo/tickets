@@ -16,7 +16,7 @@ class BusCompany(models.Model):
     Returns:
         [type]: [description]
     """
-    user = models.OneToOneField(User, on_delete=models.CASCADE,
+    user = models.ForeignKey(User, on_delete=models.CASCADE,
                              verbose_name='Login Username')  # Admin user account for the Bus Company.
     company_name = models.CharField(max_length=50)
     company_phone_number = models.CharField(max_length=50)
