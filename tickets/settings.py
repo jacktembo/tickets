@@ -96,7 +96,7 @@ DATABASES = {
         'USER': 'allzedco_root',
         'PASSWORD': 'Zambia2022!',
         'HOST': 'node225.namehero.net',
-        'PORT': 2083,
+        'PORT': '2083',
         'OPTIONS': {
           'autocommit': True,
         },
