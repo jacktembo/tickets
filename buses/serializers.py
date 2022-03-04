@@ -1,4 +1,5 @@
 from decimal import Decimal
+from attr import field
 from rest_framework import serializers
 from .models import *
 
@@ -26,7 +27,10 @@ class PassengerSerializer(serializers.ModelSerializer):
 class RouteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Route
-        exclude = ('bus',)
+        fields = [
+            'bus', 'starting_place', 'destination', 'time', 'price', 'route_full_name',
+            'route_slug_name',
+        ]
 
     route_full_name = serializers.SerializerMethodField(method_name='full_route_name')
     route_slug_name = serializers.SerializerMethodField(method_name='slug_name')

@@ -1,7 +1,10 @@
-from django.test import TestCase
+from openpyxl import load_workbook
+file_name = input('Please enter file name. Case sensitive')
+wb = load_workbook(file_name)
+sheet = wb.active
 
-import requests
-
-params = {'departure_date': '2022-02-14', 'departure_time': '13:18:25', 'bus_short_name': 'matt1'}
-r = requests.get('http://localhost:8000/buses/matt1/tickets-sold', params=params)
-print(r.status_code)
+bus = input('Enter a Bus Short Nane')
+startting_place = sheet.cell(row=1, column=1)
+destination = sheet.cell(row=1, column=1)
+time = sheet.cell(row=1, column=1)
+price = sheet.cell(row=1, column=1)
