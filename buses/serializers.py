@@ -1,5 +1,4 @@
 from decimal import Decimal
-from attr import field
 from rest_framework import serializers
 from .models import *
 
