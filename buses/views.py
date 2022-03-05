@@ -17,7 +17,7 @@ from rest_framework.generics import *
 
 class BusCompanies(ListCreateAPIView):
     def get_queryset(self):
-        return BusCompany.objects.all()
+        return BusCompany.objects.prefetch_related('bus_company_image').all()
 
     def get_serializer_class(self):
         return BusCompanySerializer
@@ -62,8 +62,19 @@ class BusViewSet(ModelViewSet):
 
 
 class RouteViewSet(ModelViewSet):
-    queryset = Route.objects.all()
+    def get_queryset(self):
+        if 'bus-company' in self.request.query_params:
+            bus_company = self.request.query_params.get('bus-company', False)
+            if bus_company is not None:
+                return Route.objects.filter(bus__bus_company_id=bus_company)
+        else:
+            return Route.objects.all()
     serializer_class = RouteSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = ['bus', 'starting_place', 'destination', 'time', 'price']
+    search_fields = ['starting_place', 'destination', 'time']
+    ordering_fields = ['starting_place', 'destination', 'bus_company']
+    pagination_class = PageNumberPagination
 
     def delete(self, request, pk):
         route = get_object_or_404(Route, pk=pk)
@@ -83,12 +94,6 @@ class CalculateTicketPrice(RetrieveAPIView):
     def get_queryset(self):
         Route.objects.filter(bus=self.request.query_params['bus_short_name'])
 
-
-class BusRoutes(ListAPIView):
-    queryset = Route.objects.all()
-    serializer_class = RouteSerializer
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['bus']
 
 
 class DepartureTimes(ModelViewSet):
@@ -128,7 +133,7 @@ class TicketsSold(ListAPIView):
 
 class NumberOfSeatsTaken(APIView):
     def get(self):
-        bus = bus.objects.get(pk=self.request.query_params.get('bus_short_name', None))
+        bus = Bus.objects.get(pk=self.request.query_params.get('bus_short_name', None))
         tickets = Ticket.objects.filter(bus=bus, departure_date=self.request.query_params.get('departure_date', None),
                                         departure_time=self.request.query_params.get('departure-time', None))
         total_number = tickets.count()

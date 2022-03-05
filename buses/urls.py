@@ -20,7 +20,7 @@ from .views import DefaultRouter
 
 router = DefaultRouter()
 router.register('buses', views.BusViewSet)
-router.register('routes', views.RouteViewSet)
+router.register('routes', views.RouteViewSet, basename='RouteViewSet')
 router.register('times', views.DepartureTimes, basename='times')
 urlpatterns = [
     path('bus-companies', views.BusCompanies.as_view()),
@@ -28,7 +28,6 @@ urlpatterns = [
     path('tickets', views.Tickets.as_view()),
     path('tickets/<str:pk>', views.TicketDetail.as_view()),
     path('price', views.CalculateTicketPrice.as_view()),
-    path('routes', views.BusRoutes.as_view()),
     path('tickets-sold/', views.TicketsSold.as_view()),
     path('seats-available', views.SeatsAvailable.as_view())
 

@@ -36,7 +36,7 @@ class BusCompanyImage(models.Model):
     Args:
         models ([type]): [description]
     """
-    bus_company = models.OneToOneField(BusCompany, on_delete=models.CASCADE, related_name='images')
+    bus_company = models.OneToOneField(BusCompany, on_delete=models.CASCADE, related_name='bus_company_image')
     image = models.ImageField(upload_to='tickets/buscompanies', verbose_name='Upload Company Logo')
 
 
@@ -66,8 +66,10 @@ class Bus(models.Model):
 
     class Meta:
         verbose_name_plural = 'Buses'
+
     def make_fully_booked(self):
         pass
+
     def __str__(self):
         return self.bus_full_name
 
@@ -77,13 +79,14 @@ class Bus(models.Model):
         """
         query = Bus.objects.filter(bus_company=self.bus_company).count()
         # Computing the bus unique identifier below
-        self.bus_short_name = (self.bus_company.company_name[:4] + str(query + 1)).lower()
+        self.bus_short_name = "".join((self.bus_company.company_name[:4] + str(query + 1)).lower().strip().split())
         super(Bus, self).save(*args, **kwargs)
 
 
 class Route(models.Model):
     """A route class e.g from Lusaka to Livingstone"""
     bus = models.ForeignKey(Bus, on_delete=models.CASCADE, related_name='route')
+    # bus_company = models.CharField(max_length=50)
     starting_place = models.CharField(max_length=50)
     destination = models.CharField(max_length=50)
     time = models.TimeField()
@@ -166,4 +169,3 @@ class OfflineSoldSeat(models.Model):
     seat_number = models.IntegerField()
     departure_date = models.DateField()
     departure_time = models.TimeField()
-
