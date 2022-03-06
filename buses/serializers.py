@@ -65,7 +65,7 @@ class SeatSerializer(serializers.ModelSerializer):
 class TicketSerializer(serializers.ModelSerializer):
     time = serializers.SerializerMethodField('route_time')
     price = serializers.SerializerMethodField('ticket_price')
-    route_name = serializers.SerializerMethodField('the_route')
+    route_slug_name = serializers.SerializerMethodField('the_route')
     target_bus_company = serializers.SerializerMethodField('bus_company')
 
     def route_time(self, ticket: Ticket):
@@ -85,5 +85,5 @@ class TicketSerializer(serializers.ModelSerializer):
         fields = [
             'ticket_number', 'bus', 'target_bus_company', 'passenger_phone', 'passenger_first_name',
             'passenger_last_name',
-            'departure_date', 'seat_number', 'route', 'route_name', 'time', 'price',
+            'departure_date', 'seat_number', 'route', 'route_slug_name', 'time', 'price',
         ]

@@ -24,12 +24,11 @@ from . import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index),
-    path('bus-tickets/', include('buses.urls')),
+    path('api/', include('buses.urls')),
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.jwt')),
-    path('auth/login/', TokenObtainPairView.as_view()),
+    path('auth/', include('djoser.urls.authtoken')),
     path('__debug__/', include('debug_toolbar.urls')),
     re_path(r'^ckeditor/', include('ckeditor_uploader.urls')),
 
 ]
-

@@ -1,18 +1,17 @@
-from django.contrib.auth.models import User
-from django.shortcuts import render, get_object_or_404, get_list_or_404
-from django.views.decorators.clickjacking import xframe_options_exempt
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.settings import api_settings
 from rest_framework.decorators import api_view, APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.routers import DefaultRouter
-from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
 from decimal import Decimal
 from .models import *
 from .serializers import *
 from rest_framework.generics import *
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
 
 class BusCompanies(ListCreateAPIView):
@@ -29,6 +28,8 @@ class BusCompanyDetail(RetrieveUpdateDestroyAPIView):
 
     def get_serializer_class(self):
         return BusCompanySerializer
+
+    permission_classes = [IsAuthenticated]
 
 
 class Passenger(CreateAPIView):
@@ -52,7 +53,6 @@ class BusViewSet(ModelViewSet):
     filterset_fields = ['bus_short_name', 'bus_company']
     search_fields = ['bus_short_name', ]
     ordering_fields = ['bus_short_name', 'bus_company']
-    pagination_class = PageNumberPagination
 
     def delete(self, request, pk):
         bus = get_object_or_404(Bus, pk=pk)
@@ -69,12 +69,12 @@ class RouteViewSet(ModelViewSet):
                 return Route.objects.filter(bus__bus_company_id=bus_company)
         else:
             return Route.objects.all()
+
     serializer_class = RouteSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_fields = ['bus', 'starting_place', 'destination', 'time', 'price']
     search_fields = ['starting_place', 'destination', 'time']
     ordering_fields = ['starting_place', 'destination', 'bus_company']
-    pagination_class = PageNumberPagination
 
     def delete(self, request, pk):
         route = get_object_or_404(Route, pk=pk)
@@ -95,14 +95,12 @@ class CalculateTicketPrice(RetrieveAPIView):
         Route.objects.filter(bus=self.request.query_params['bus_short_name'])
 
 
-
 class DepartureTimes(ModelViewSet):
     serializer_class = Route
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_fields = ['bus', 'starting_place', 'destination']
     search_fields = ['time', ]
     ordering_fields = ['bus_short_name', 'bus_company']
-    pagination_class = PageNumberPagination
 
     def get_queryset(self):
         routes = Route.objects.filter(bus=self.request.query_params.get('bus_short_name', None))

@@ -23,6 +23,7 @@ class BusCompany(models.Model):
     company_email = models.EmailField(max_length=64)
     address = models.CharField(max_length=100)
 
+
     class Meta:
         verbose_name_plural = 'Bus Companies'
 
@@ -86,14 +87,13 @@ class Bus(models.Model):
 class Route(models.Model):
     """A route class e.g from Lusaka to Livingstone"""
     bus = models.ForeignKey(Bus, on_delete=models.CASCADE, related_name='route')
-    # bus_company = models.CharField(max_length=50)
     starting_place = models.CharField(max_length=50)
     destination = models.CharField(max_length=50)
     time = models.TimeField()
     price = models.DecimalField(decimal_places=2, max_digits=6)
 
     def __str__(self):
-        return f'{self.starting_place} to {self.destination}'
+        return f'{self.starting_place.title()}-{self.destination.title()}-K{self.price}'
 
 
 class BusImage(models.Model):
