@@ -28,6 +28,7 @@ urlpatterns = [
     path('tickets', views.Tickets.as_view()),
     path('tickets/<str:pk>', views.TicketDetail.as_view()),
     path('price', views.CalculateTicketPrice.as_view()),
+    path('seats', views.Seats.as_view()),
     path('tickets-sold/', views.TicketsSold.as_view()),
     path('seats-available', views.SeatsAvailable.as_view())
 

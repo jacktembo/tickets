@@ -1,6 +1,13 @@
 import requests
-headers = {
-    'Authorization': 'Token dc52a962fb73d7a8a08594f0c521923ebfae41c1'
+import json
+
+url = 'https://probasesms.com/api/json/multi/res/bulk/sms'
+
+params = {
+    'senderid': 'All1Zed', 'username': 'All1Zed@12$$', 'password': 'All1Zed@sms12$$',
+    'recipient': ['260971977252'],
+    'message': 'Welcome Jack'
 }
-r = requests.get('http://localhost:8000/api/bus-companies')
+r = requests.post(url, data=params)
 print(r.json())
+

@@ -12,6 +12,7 @@ from .models import *
 from .serializers import *
 from rest_framework.generics import *
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from datetime import datetime, date, timedelta, time
 
 
 class BusCompanies(ListCreateAPIView):
@@ -131,20 +132,36 @@ class TicketsSold(ListAPIView):
 
 class NumberOfSeatsTaken(APIView):
     def get(self):
-        bus = Bus.objects.get(pk=self.request.query_params.get('bus_short_name', None))
-        tickets = Ticket.objects.filter(bus=bus, departure_date=self.request.query_params.get('departure_date', None),
+        bus = Bus.objects.get(pk=self.request.query_params.get('bus', None))
+        tickets = Ticket.objects.filter(bus=bus, departure_date=date.fromisoformat(
+            self.request.query_params.get('departure-date', None)),
                                         departure_time=self.request.query_params.get('departure-time', None))
         total_number = tickets.count()
         return Response(total_number)
 
 
-class SeatsTaken(APIView):
-    def get(self):
-        tickets = Ticket.objects.filter(bus=self.request.query_params['bus_short_name'],
-                                        departure_date=self.request.query_params['departure_date'],
-                                        departure_time=self.request.query_params['departure_time'])
+class Seats(APIView):
+    def get(self, bus):
+        route_id = self.request.query_params['route-id']
+        route = Route.objects.get(id=route_id)
+        bus = route.bus
+        total_number_of_seats = bus.number_of_seats
+        departure_date = date.fromisoformat(self.request.query_params['departure-date'])
+        route_time = route.time
+        tickets = Ticket.objects.filter(bus=bus, departure_date=departure_date, route__time=route_time)
         seats_taken = [ticket.seat_number for ticket in tickets]
-        return Response(seats_taken)
+        seats_not_taken = [seat for seat in range(1, total_number_of_seats + 1) if seat not in seats_taken]
+        all_seats = sorted(seats_taken + seats_not_taken)
+
+        def seat_status(seat_number):
+            if seat_number in seats_taken:
+                return 'taken'
+            elif seat_number in seats_not_taken:
+                return 'available'
+            else:
+                return 'this is not a valid seat'
+
+        return Response({seat: seat_status(seat) for seat in all_seats})
 
 
 @api_view()
