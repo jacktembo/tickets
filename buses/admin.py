@@ -13,7 +13,7 @@ class BusCompanyImageInline(admin.StackedInline):
 
 @admin.register(Bus)
 class BusAdmin(admin.ModelAdmin):
-    list_display = ['bus_company', 'bus_full_name', 'number_of_seats',]
+    list_display = ['bus_company', 'bus_full_name', 'number_of_seats', ]
     inlines = [BusIMageInline]
 
 
@@ -24,4 +24,14 @@ class BusCompanyAdmin(admin.ModelAdmin):
     ]
     inlines = [BusCompanyImageInline, ]
 
+
+class TicketAdmin(admin.ModelAdmin):
+    list_display = [
+        'ticket_number', 'passenger_first_name', 'passenger_last_name', 'date_bought'
+    ]
+    search_fields = ['passenger_first_name']
+    list_per_page = 5
+
+
 admin.site.register(Route)
+admin.site.register(Ticket, TicketAdmin)

@@ -15,7 +15,7 @@ class BusCompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = BusCompany
         fields = [
-            'company_name', 'company_phone_number', 'company_email', 'address',
+           'id', 'company_name', 'company_phone_number', 'company_email', 'address',
             'bus_company_image'
         ]
 
@@ -67,6 +67,7 @@ class TicketSerializer(serializers.ModelSerializer):
     price = serializers.SerializerMethodField('ticket_price')
     route_slug_name = serializers.SerializerMethodField('the_route')
     target_bus_company = serializers.SerializerMethodField('bus_company')
+    bus_name = serializers.SerializerMethodField('the_bus_name')
 
     def route_time(self, ticket: Ticket):
         return ticket.route.time.strftime('%H:%M')
@@ -78,12 +79,14 @@ class TicketSerializer(serializers.ModelSerializer):
         return ticket.route.__str__()
 
     def bus_company(self, ticket: Ticket):
-        return ticket.bus.bus_company.company_name
+        return ticket.route.bus.bus_company.company_name
 
+    def the_bus_name(self, ticket: Ticket):
+        return ticket.route.bus.bus_full_name
     class Meta:
         model = Ticket
         fields = [
-            'ticket_number', 'bus', 'target_bus_company', 'passenger_phone', 'passenger_first_name',
+            'ticket_number','bus_name', 'target_bus_company', 'passenger_phone', 'passenger_first_name',
             'passenger_last_name',
             'departure_date', 'seat_number', 'route', 'route_slug_name', 'time', 'price',
         ]

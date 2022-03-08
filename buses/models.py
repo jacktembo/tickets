@@ -1,10 +1,14 @@
 from django.conf.global_settings import AUTH_USER_MODEL
 from django.contrib.auth.models import User
 from django.db import models
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, get_list_or_404
 import secrets
 import string
 from datetime import date, datetime, timedelta, time
+
+from rest_framework import status
+from rest_framework.response import Response
 
 
 class BusCompany(models.Model):
@@ -22,7 +26,6 @@ class BusCompany(models.Model):
     company_phone_number = models.CharField(max_length=50)
     company_email = models.EmailField(max_length=64)
     address = models.CharField(max_length=100)
-
 
     class Meta:
         verbose_name_plural = 'Bus Companies'
@@ -118,6 +121,13 @@ class Seat(models.Model):
     verbose_name = models.CharField(max_length=50, blank=True, null=True)
 
 
+def validate_seat_number(route, seat_number, departure_date):
+    if Ticket.objects.filter(route=route, seat_number=seat_number, departure_date=departure_date).exists():
+        return Response('Seat number already taken', status=status.HTTP_400_BAD_REQUEST)
+    else:
+        return True
+
+
 class Ticket(models.Model):
     """A ticket that has been sucessfully paid for and generated.
 
@@ -128,7 +138,6 @@ class Ticket(models.Model):
         [type]: [description]
     """
     ticket_number = models.CharField(max_length=20, primary_key=True, editable=False, unique=True)
-    bus = models.ForeignKey(Bus, on_delete=models.CASCADE)
     date_bought = models.DateField(auto_now_add=True)
     passenger_phone = models.CharField(max_length=12)
     passenger_first_name = models.CharField(max_length=50)
@@ -143,8 +152,18 @@ class Ticket(models.Model):
     def save(self, *args, **kwargs):
         # bus = Bus.objects.get(bus_short_name=self.route.bus.bus_short_name)
         alphabet = string.ascii_letters + string.digits
-        ticket_number = ''.join(secrets.choice(alphabet) for i in range(10))
-        self.ticket_number = ticket_number
+        bus_short_name = self.route.bus.bus_short_name
+        while True:
+            ticket_number = ''.join(secrets.choice(alphabet) for i in range(10))
+            available_tickets = [ticket.ticket_number for ticket in Ticket.objects.all()]
+            proposed_ticket_number = f'{bus_short_name}-{ticket_number}'
+            if proposed_ticket_number not in available_tickets:
+                self.ticket_number = proposed_ticket_number
+                break
+            else:
+                continue
+        assert validate_seat_number(self.route, self.seat_number, self.departure_date) == True
+
         super(Ticket, self).save(*args, **kwargs)
 
 
