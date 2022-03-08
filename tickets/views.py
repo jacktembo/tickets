@@ -1,5 +1,5 @@
-from django.http import HttpResponse
+from django.shortcuts import render
 
 
 def index(request):
-    return HttpResponse("All1zed Ticketing API. Endpoints are secured and hidden!. The app is working correctly.")
+    return render(request, 'index.html')
