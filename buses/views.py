@@ -148,7 +148,7 @@ class Seats(APIView):
         total_number_of_seats = bus.number_of_seats
         departure_date = date.fromisoformat(self.request.query_params['departure-date'])
         route_time = route.time
-        tickets = Ticket.objects.filter(bus=bus, departure_date=departure_date, route__time=route_time)
+        tickets = Ticket.objects.filter(route__bus=bus, departure_date=departure_date, route__time=route_time)
         seats_taken = [ticket.seat_number for ticket in tickets]
         seats_not_taken = [seat for seat in range(1, total_number_of_seats + 1) if seat not in seats_taken]
         all_seats = sorted(seats_taken + seats_not_taken)
