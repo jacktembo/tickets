@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-h=-w4r^+9xst3kjp)81q12a@tzt0j&da2*c#ht&pt-x1a278)-'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'cloudinary_storage',
+    'cloudinary',
     'accounts',
     'buses',
     'core',
@@ -184,4 +186,10 @@ CKEDITOR_CONFIGS = {
     },
 }
 
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'magicbrains',
+    'API_KEY': '589471393545124',
+    'API_SECRET': '1VWzFZ9Da6ptbk7eahdq7Snpsek'
+}
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
