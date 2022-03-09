@@ -1,4 +1,4 @@
-from rest_framework.authentication import TokenAuthentication
+from rest_framework.authentication import TokenAuthentication, BasicAuthentication, SessionAuthentication
 from rest_framework.settings import api_settings
 from rest_framework.decorators import api_view, APIView
 from rest_framework.response import Response
@@ -8,6 +8,9 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.routers import DefaultRouter
 from django_filters.rest_framework import DjangoFilterBackend
 from decimal import Decimal
+
+from rest_framework_simplejwt.authentication import JWTAuthentication
+
 from .models import *
 from .serializers import *
 from rest_framework.generics import *
@@ -22,6 +25,14 @@ class BusCompanies(ListCreateAPIView):
     def get_serializer_class(self):
         return BusCompanySerializer
 
+    authentication_classes = [
+        TokenAuthentication, JWTAuthentication, BasicAuthentication,
+        SessionAuthentication,
+    ]
+    permission_classes = [
+        IsAdminUser
+    ]
+
 
 class BusCompanyDetail(RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
@@ -30,7 +41,13 @@ class BusCompanyDetail(RetrieveUpdateDestroyAPIView):
     def get_serializer_class(self):
         return BusCompanySerializer
 
-    permission_classes = [IsAuthenticated]
+    authentication_classes = [
+        TokenAuthentication, JWTAuthentication, BasicAuthentication,
+        SessionAuthentication,
+    ]
+    permission_classes = [
+        IsAdminUser
+    ]
 
 
 class Passenger(CreateAPIView):
@@ -46,6 +63,14 @@ class Passenger(CreateAPIView):
 
         return Response("Bus was deleted successfully", status.HTTP_204_NO_CONTENT)
 
+    authentication_classes = [
+        TokenAuthentication, JWTAuthentication, BasicAuthentication,
+        SessionAuthentication,
+    ]
+    permission_classes = [
+        IsAdminUser
+    ]
+
 
 class BusViewSet(ModelViewSet):
     queryset = Bus.objects.all()
@@ -60,6 +85,14 @@ class BusViewSet(ModelViewSet):
         bus.delete()
 
         return Response("Bus was deleted successfully", status.HTTP_204_NO_CONTENT)
+
+    authentication_classes = [
+        TokenAuthentication, JWTAuthentication, BasicAuthentication,
+        SessionAuthentication,
+    ]
+    permission_classes = [
+        IsAdminUser
+    ]
 
 
 class RouteViewSet(ModelViewSet):
@@ -82,6 +115,14 @@ class RouteViewSet(ModelViewSet):
         route.delete()
         return Response("I tem was deleted", status.HTTP_204_NO_CONTENT)
 
+    authentication_classes = [
+        TokenAuthentication, JWTAuthentication, BasicAuthentication,
+        SessionAuthentication,
+    ]
+    permission_classes = [
+        IsAdminUser
+    ]
+
 
 class Tickets(ListCreateAPIView):
     def get_queryset(self):
@@ -89,6 +130,14 @@ class Tickets(ListCreateAPIView):
 
     def get_serializer_class(self):
         return TicketSerializer
+
+    authentication_classes = [
+        TokenAuthentication, JWTAuthentication, BasicAuthentication,
+        SessionAuthentication,
+    ]
+    permission_classes = [
+        IsAdminUser
+    ]
 
 
 class CalculateTicketPrice(RetrieveAPIView):
@@ -141,6 +190,14 @@ class NumberOfSeatsTaken(APIView):
 
 
 class Seats(APIView):
+    authentication_classes = [
+        TokenAuthentication, JWTAuthentication, BasicAuthentication,
+        SessionAuthentication,
+    ]
+    permission_classes = [
+        IsAdminUser
+    ]
+
     def get(self, bus):
         route_id = self.request.query_params['route-id']
         route = Route.objects.get(id=route_id)
@@ -192,6 +249,14 @@ def is_seat_available(request, seat_number, bus_short_name, departure_date, depa
 
 
 class SeatsAvailable(APIView):
+    authentication_classes = [
+        TokenAuthentication, JWTAuthentication, BasicAuthentication,
+        SessionAuthentication,
+    ]
+    permission_classes = [
+        IsAdminUser
+    ]
+
     def get(self, *args, **kwargs):
         bus = Bus.objects.get(bus_short_name=self.request.query_params.get('bus_short_name', 'None'))
         tickets = Ticket.objects.filter(bus=bus, departure_date=self.request.query_params.get('departure_date', None),
@@ -202,6 +267,14 @@ class SeatsAvailable(APIView):
 
 
 class TicketDetail(APIView):
+    authentication_classes = [
+        TokenAuthentication, JWTAuthentication, BasicAuthentication,
+        SessionAuthentication,
+    ]
+    permission_classes = [
+        IsAdminUser
+    ]
+
     def get(self, request, pk):
         ticket = get_object_or_404(Ticket, pk=pk)
         serializer = TicketSerializer(ticket)
