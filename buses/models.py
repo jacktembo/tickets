@@ -137,6 +137,7 @@ class Ticket(models.Model):
     seat_number = models.IntegerField()
     sold_offline = models.BooleanField(default=False)
     price = models.DecimalField(max_digits=6, decimal_places=2, editable=False)
+    scanned = models.BooleanField(default=False, help_text='Designates whether a Ticket has already been scanned')
 
     def __str__(self):
         return self.ticket_number

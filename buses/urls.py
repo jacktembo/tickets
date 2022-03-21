@@ -37,6 +37,7 @@ urlpatterns = [
     path('bus-status/<int:route_id>/<departure_date>', views.is_fully_booked), # Whether a bus is fully booked or not.
     path('seat-status/<int:route_id>/<departure_date>/<int:seat_number>', views.is_seat_available), # Whether a seat is available or booked.
     path('sale-offline/<int:route_id>/<departure_date>/<int:seat_number>', views.sale_offline),
+    path('scan/<ticket_number>', views.ScanView.as_view()),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += router.urls

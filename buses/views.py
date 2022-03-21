@@ -1,7 +1,7 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication, SessionAuthentication
-from rest_framework.decorators import api_view, APIView
+from rest_framework.decorators import api_view, APIView, permission_classes
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.generics import *
 from rest_framework.permissions import IsAdminUser
@@ -90,6 +90,8 @@ class BusViewSet(ModelViewSet):
 
 
 class RouteViewSet(ModelViewSet):
+    permission_classes([IsAdminUser])
+
     def get_queryset(self):
         if 'bus-company' in self.request.query_params:
             bus_company = self.request.query_params.get('bus-company', False)
@@ -103,6 +105,7 @@ class RouteViewSet(ModelViewSet):
     filterset_fields = ['bus', 'starting_place', 'destination', 'time', 'price']
     search_fields = ['starting_place', 'destination', 'time']
     ordering_fields = ['starting_place', 'destination', 'bus_company']
+
 
     def delete(self, request, pk):
         route = get_object_or_404(Route, pk=pk)
@@ -167,6 +170,7 @@ class FindDepartureTimes(APIView):
 class TicketsSold(ListAPIView):
     """This designates the list of tickets sold for a specified bus, at a specified
     departure date and time"""
+    permission_classes = [IsAdminUser]
     queryset = Ticket.objects.filter(sold_offline=False)
     serializer_class = TicketSerializer
     filter_backends = [DjangoFilterBackend]
@@ -219,6 +223,7 @@ class Seats(APIView):
 
 
 @api_view()
+@permission_classes([IsAdminUser])
 def seats_available(request, route_id, departure_date):
     route = Route.objects.get(id=route_id)
     bus = route.bus
@@ -231,6 +236,7 @@ def seats_available(request, route_id, departure_date):
 
 
 @api_view()
+@permission_classes([IsAdminUser])
 def is_fully_booked(request, route_id, departure_date):
     """
     Designates whether the specified bus is fully booked for the specified date and time.
@@ -245,6 +251,7 @@ def is_fully_booked(request, route_id, departure_date):
 
 
 @api_view()
+@permission_classes([IsAdminUser])
 def is_seat_available(request, route_id, departure_date, seat_number):
     """Designates whether the specified seat number has already been taken for
     the specified date and time"""
@@ -306,6 +313,7 @@ class TicketDetail(APIView):
 
 
 @api_view()
+@permission_classes([IsAdminUser])
 def number_of_seats_taken(request, route_id, departure_date):
     """The total number of tickets sold for a specified bus at a specified time"""
     route = Route.objects.get(id=route_id)
@@ -317,6 +325,7 @@ def number_of_seats_taken(request, route_id, departure_date):
 
 
 @api_view()
+@permission_classes([IsAdminUser])
 def seats_taken(request, route_id, departure_date):
     """Getting the list of seats that are already taken for a specified date and time"""
     seats = []
@@ -329,6 +338,7 @@ def seats_taken(request, route_id, departure_date):
 
 
 @api_view()
+@permission_classes([IsAdminUser])
 def is_fully_booked(request, route_id, departure_date):
     """
     Designates whether the specified bus is fully booked for the specified date and time.
@@ -347,6 +357,7 @@ def is_fully_booked(request, route_id, departure_date):
 
 
 @api_view()
+@permission_classes([IsAdminUser])
 def is_seat_available(request, seat_number, route_id, departure_date):
     """Designates whether the specified seat number has already been taken for
     the specified date and time"""
@@ -363,6 +374,7 @@ def is_seat_available(request, seat_number, route_id, departure_date):
 
 
 @api_view(['POST'])
+@permission_classes([IsAdminUser])
 def sale_offline(request, route_id, departure_date, seat_number):
     """
     This is for making a ticket as sold in the station.
@@ -375,7 +387,22 @@ def sale_offline(request, route_id, departure_date, seat_number):
         ticket = Ticket.objects.create(
             sold_offline=True, passenger_phone='N/A', passenger_first_name='N/A',
             passenger_last_name='N/A', departure_date=departure_date, route=route,
-            seat_number=seat_number
+            seat_number=seat_number, scanned=True
         )
         return Response('sold offline ticket successfully', status=status.HTTP_201_CREATED)
 
+
+class ScanView(APIView):
+    """Logic for scanning a ticket."""
+    permission_classes = [IsAdminUser]
+    authentication_classes = [TokenAuthentication, SessionAuthentication, JWTAuthentication, BasicAuthentication]
+
+    def get(self, request, ticket_number, *args, **kwargs):
+        ticket = Ticket.objects.filter(ticket_number=ticket_number)
+        if ticket.exists() and not ticket.first().scanned:
+            ticket.update(scanned=True)
+            return Response('Verified Successfully')
+        elif ticket.exists() and ticket.first().scanned:
+            return Response('Ticket Already Scanned')
+        else:
+            return Response('Invalid Ticket')
