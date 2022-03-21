@@ -15,10 +15,9 @@ Including another URLconf
 """
 from django.conf import settings
 from django.conf.urls.static import static
-from djoser.views import TokenCreateView, TokenDestroyView
 from django.contrib import admin
 from django.urls import path, include, re_path
-from rest_framework_simplejwt.views import TokenObtainPairView
+
 admin.AdminSite.site_header = 'All1Zed Ticketing System - Administration'
 admin.AdminSite.site_title = 'All1Zed Tickets'
 from . import views
@@ -32,5 +31,6 @@ urlpatterns = [
     path('auth/', include('djoser.urls.authtoken')),
     path('__debug__/', include('debug_toolbar.urls')),
     re_path(r'^ckeditor/', include('ckeditor_uploader.urls')),
+    path('bulk-routes', views.BulkRoutesUpload.as_view(), name='bulk-routes'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

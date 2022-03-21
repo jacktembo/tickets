@@ -14,25 +14,29 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.conf import settings
-from django.contrib import admin
-from django.urls import path, include
-from . import views
-from .views import DefaultRouter
 from django.conf.urls.static import static
+from django.urls import path
+from rest_framework.routers import DefaultRouter
+
+from . import views
 
 router = DefaultRouter()
 router.register('buses', views.BusViewSet)
 router.register('routes', views.RouteViewSet, basename='RouteViewSet')
-router.register('times', views.DepartureTimes, basename='times')
 urlpatterns = [
     path('bus-companies', views.BusCompanies.as_view()),
     path('bus-companies/<int:pk>', views.BusCompanyDetail.as_view()),
     path('tickets', views.Tickets.as_view()),
     path('tickets/<str:pk>', views.TicketDetail.as_view()),
     path('price', views.CalculateTicketPrice.as_view()),
-    path('seats', views.Seats.as_view()),
-    path('tickets-sold/', views.TicketsSold.as_view()),
-    path('seats-available', views.SeatsAvailable.as_view())
+    path('seats', views.Seats.as_view()), # All seats: with their respective status.
+    path('tickets-sold/', views.TicketsSold.as_view()), # Using filter backends.
+    path('seats-available/<int:route_id>/<departure_date>', views.seats_available),
+    path('seats-taken-count/<int:route_id>/<departure_date>', views.number_of_seats_taken),
+    path('seats-taken/<int:route_id>/<departure_date>', views.seats_taken),
+    path('bus-status/<int:route_id>/<departure_date>', views.is_fully_booked), # Whether a bus is fully booked or not.
+    path('seat-status/<int:route_id>/<departure_date>/<int:seat_number>', views.is_seat_available), # Whether a seat is available or booked.
+    path('sale-offline/<int:route_id>/<departure_date>/<int:seat_number>', views.sale_offline),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += router.urls

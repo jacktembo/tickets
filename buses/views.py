@@ -1,21 +1,15 @@
-from rest_framework.authentication import TokenAuthentication, BasicAuthentication, SessionAuthentication
-from rest_framework.settings import api_settings
-from rest_framework.decorators import api_view, APIView
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.viewsets import ModelViewSet
-from rest_framework.filters import SearchFilter, OrderingFilter
-from rest_framework.routers import DefaultRouter
 from django_filters.rest_framework import DjangoFilterBackend
-from decimal import Decimal
-
+from rest_framework import status
+from rest_framework.authentication import TokenAuthentication, BasicAuthentication, SessionAuthentication
+from rest_framework.decorators import api_view, APIView
+from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework.generics import *
+from rest_framework.permissions import IsAdminUser
+from rest_framework.response import Response
+from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-from .models import *
 from .serializers import *
-from rest_framework.generics import *
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
-from datetime import datetime, date, timedelta, time
 
 
 class BusCompanies(ListCreateAPIView):
@@ -126,7 +120,7 @@ class RouteViewSet(ModelViewSet):
 
 class Tickets(ListCreateAPIView):
     def get_queryset(self):
-        return Ticket.objects.all()
+        return Ticket.objects.filter(sold_offline=False)
 
     def get_serializer_class(self):
         return TicketSerializer
@@ -173,18 +167,21 @@ class FindDepartureTimes(APIView):
 class TicketsSold(ListAPIView):
     """This designates the list of tickets sold for a specified bus, at a specified
     departure date and time"""
-    queryset = Ticket.objects.all()
+    queryset = Ticket.objects.filter(sold_offline=False)
     serializer_class = TicketSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['bus', 'departure_date']
+    filterset_fields = [
+        'bus', 'departure_date', 'date_bought', 'passenger_phone', 'passenger_first_name',
+        'passenger_last_name', 'seat_number', 'route', 'price', 'ticket_number',
+    ]
 
 
 class NumberOfSeatsTaken(APIView):
     def get(self):
-        bus = Bus.objects.get(pk=self.request.query_params.get('bus', None))
+        route = self.request.query_params.get('bus', None)
+        bus = route.bus
         tickets = Ticket.objects.filter(bus=bus, departure_date=date.fromisoformat(
-            self.request.query_params.get('departure-date', None)),
-                                        departure_time=self.request.query_params.get('departure-time', None))
+            self.request.query_params.get('departure-date', None)))
         total_number = tickets.count()
         return Response(total_number)
 
@@ -222,24 +219,39 @@ class Seats(APIView):
 
 
 @api_view()
-def is_fully_booked(request, bus_short_name: Bus, departure_date, departure_time):
+def seats_available(request, route_id, departure_date):
+    route = Route.objects.get(id=route_id)
+    bus = route.bus
+    total_number_of_seats = bus.number_of_seats
+    tickets = Ticket.objects.filter(bus=bus, departure_date=departure_date)
+    seats_taken = [ticket.seat_number for ticket in tickets]
+    seats_not_taken = [seat for seat in range(1, total_number_of_seats + 1) if seat not in seats_taken]
+
+    return Response(seats_not_taken)
+
+
+@api_view()
+def is_fully_booked(request, route_id, departure_date):
     """
     Designates whether the specified bus is fully booked for the specified date and time.
     """
-    if number_of_seats_taken(bus_short_name=bus_short_name, departure_date=departure_date,
-                             departure_time=departure_time) == bus_short_name.number_of_seats:
+    route = Route.objects.get(id=route_id)
+    bus = route.bus
+    if number_of_seats_taken(request, route_id=route_id, departure_date=departure_date,
+                             ) == bus.number_of_seats:
         return Response('fully booked')
     else:
         return Response('not fully booked')
 
 
 @api_view()
-def is_seat_available(request, seat_number, bus_short_name, departure_date, departure_time):
+def is_seat_available(request, route_id, departure_date, seat_number):
     """Designates whether the specified seat number has already been taken for
     the specified date and time"""
     seats = []
-    tickets = Ticket.objects.filter(bus=bus_short_name, departure_date=date.fromisoformat(departure_date),
-                                    departure_time=time.fromisoformat(departure_time))
+    route = Route.objects.get(id=route_id)
+    tickets = Ticket.objects.filter(bus=route.bus, departure_date=date.fromisoformat(departure_date),
+                                    )
     for ticket in tickets:
         seats.append(ticket.seat_number)
     if seat_number not in seats:
@@ -294,45 +306,54 @@ class TicketDetail(APIView):
 
 
 @api_view()
-def number_of_seats_taken(request, bus_short_name, departure_date, departure_time):
+def number_of_seats_taken(request, route_id, departure_date):
     """The total number of tickets sold for a specified bus at a specified time"""
-    bus = get_object_or_404(Bus, pk=bus_short_name)
+    route = Route.objects.get(id=route_id)
+    bus = get_object_or_404(Bus, pk=route.bus.bus_short_name)
     tickets = Ticket.objects.filter(bus=bus, departure_date=date.fromisoformat(departure_date),
-                                    departure_time=time.fromisoformat(departure_time))
+                                    )
     total_number_sold = tickets.count()
     return Response(total_number_sold)
 
 
 @api_view()
-def seats_taken(request, bus_short_name, departure_date, departure_time):
+def seats_taken(request, route_id, departure_date):
     """Getting the list of seats that are already taken for a specified date and time"""
     seats = []
-    tickets = Ticket.objects.filter(bus=bus_short_name, departure_date=date.fromisoformat(departure_date),
-                                    departure_time=time.fromisoformat(departure_time))
+    route = Route.objects.get(id=route_id)
+    bus = route.bus
+    tickets = Ticket.objects.filter(bus=bus, departure_date=date.fromisoformat(departure_date))
     for ticket in tickets:
         seats.append(ticket.seat_number)
     return Response(seats)
 
 
 @api_view()
-def is_fully_booked(request, bus_short_name: Bus, departure_date, departure_time):
+def is_fully_booked(request, route_id, departure_date):
     """
     Designates whether the specified bus is fully booked for the specified date and time.
+
     """
-    if number_of_seats_taken(bus_short_name=bus_short_name, departure_date=departure_date,
-                             departure_time=departure_time) == bus_short_name.number_of_seats:
+    route = Route.objects.get(id=route_id)
+    bus = route.bus
+    tickets = Ticket.objects.filter(bus=bus, departure_date=date.fromisoformat(departure_date),
+                                    )
+    total_number_sold = tickets.count()
+
+    if total_number_sold == bus.number_of_seats:
         return Response('fully booked')
     else:
         return Response('not fully booked')
 
 
 @api_view()
-def is_seat_available(request, seat_number, bus_short_name, departure_date, departure_time):
+def is_seat_available(request, seat_number, route_id, departure_date):
     """Designates whether the specified seat number has already been taken for
     the specified date and time"""
+    route = Route.objects.get(id=route_id)
     seats = []
-    tickets = Ticket.objects.filter(bus=bus_short_name, departure_date=date.fromisoformat(departure_date),
-                                    departure_time=time.fromisoformat(departure_time))
+    tickets = Ticket.objects.filter(bus=route.bus, departure_date=date.fromisoformat(departure_date),
+                                    )
     for ticket in tickets:
         seats.append(ticket.seat_number)
     if seat_number not in seats:
@@ -341,17 +362,20 @@ def is_seat_available(request, seat_number, bus_short_name, departure_date, depa
         return Response('taken')
 
 
-@api_view()
-def seats_available(request, bus_short_name, departure_date, departure_time):
-    seats = []
-    bus = get_object_or_404(Bus, bus_short_name=bus_short_name)  # Important for review later.
-    tickets = Ticket.objects.filter(bus=bus_short_name, departure_date=date.fromisoformat(departure_date),
-                                    departure_time=time.fromisoformat(departure_time))
-    for ticket in tickets:
-        seats.append(ticket.seat_number)
+@api_view(['POST'])
+def sale_offline(request, route_id, departure_date, seat_number):
+    """
+    This is for making a ticket as sold in the station.
+    You have to send a POST request with an empty JSON object to the endpoint to
+    create an offline ticket.
+    """
+    if request.method == 'POST':
+        route = Route.objects.get(id=route_id)
+        bus = route.bus
+        ticket = Ticket.objects.create(
+            sold_offline=True, passenger_phone='N/A', passenger_first_name='N/A',
+            passenger_last_name='N/A', departure_date=departure_date, route=route,
+            seat_number=seat_number
+        )
+        return Response('sold offline ticket successfully', status=status.HTTP_201_CREATED)
 
-    list_of_seats_available = []
-    for number in range(1, bus.number_of_seats):
-        if number not in seats:
-            list_of_seats_available.append(number)
-        return Response(list_of_seats_available)

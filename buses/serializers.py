@@ -15,7 +15,7 @@ class BusCompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = BusCompany
         fields = [
-           'id', 'company_name', 'company_phone_number', 'company_email', 'address',
+            'id', 'company_name', 'company_phone_number', 'company_email', 'address',
             'bus_company_image'
         ]
 
@@ -33,9 +33,16 @@ class PassengerSerializer(serializers.ModelSerializer):
             'id', 'first_name', 'last_name', 'phone',
         ]
 
+class BulkRouteCreate(serializers.ListSerializer):
+    def create(self, validated_data):
+        route_data = [Route(**item) for item in validated_data]
+        return Route.objects.bulk_create(route_data)
+
 
 class RouteSerializer(serializers.ModelSerializer):
+    bus = serializers.StringRelatedField()
     bus_company = serializers.SerializerMethodField('the_bus_company')
+    list_serializer_class = BulkRouteCreate
 
     class Meta:
         model = Route
@@ -83,10 +90,17 @@ class TicketSerializer(serializers.ModelSerializer):
 
     def the_bus_name(self, ticket: Ticket):
         return ticket.route.bus.bus_full_name
+
     class Meta:
         model = Ticket
         fields = [
-            'ticket_number','bus_name', 'target_bus_company', 'passenger_phone', 'passenger_first_name',
+            'ticket_number', 'bus_name', 'target_bus_company', 'passenger_phone', 'passenger_first_name',
             'passenger_last_name',
             'departure_date', 'seat_number', 'route', 'route_slug_name', 'time', 'price',
         ]
+
+
+class BulkRouteCreate(serializers.ListSerializer):
+    def create(self, validated_data):
+        route_data = [Route(**item) for item in validated_data]
+        return Route.objects.bulk_create(route_data)
