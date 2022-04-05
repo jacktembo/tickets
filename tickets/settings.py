@@ -123,10 +123,12 @@ dev_db = {
 }
 prod_db = {
     'default': {
-        'NAME': 'buses',
+        'HOST': 'node225.namehero.net',
+        'PORT': '2083',
+        'NAME': 'allzedco_busapi',
         'ENGINE': 'mysql.connector.django',
-        'USER': 'root',
-        'PASSWORD': '30970084',
+        'USER': 'allzedco_root',
+        'PASSWORD': 'Zambia2022!',
         'OPTIONS': {
           'autocommit': True,
         },
