@@ -121,6 +121,7 @@ dev_db = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3')
     }
 }
+
 prod_db = {
     'default': {
         'HOST': 'node225.namehero.net',
@@ -201,4 +202,3 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': '1VWzFZ9Da6ptbk7eahdq7Snpsek'
 }
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-
