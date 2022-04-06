@@ -30,6 +30,7 @@ SECRET_KEY = 'django-insecure-h=-w4r^+9xst3kjp)81q12a@tzt0j&da2*c#ht&pt-x1a278)-
 DEBUG = False
 
 ALLOWED_HOSTS = ['*']
+CORS_ALLOW_ALL_ORIGINS = True
 
 # Application definition
 
@@ -52,6 +53,7 @@ INSTALLED_APPS = [
     'ckeditor',
     'ckeditor_uploader',
     'debug_toolbar',
+     "corsheaders",
 ]
 
 MIDDLEWARE = [
@@ -59,6 +61,7 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
