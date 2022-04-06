@@ -14,3 +14,4 @@ whitenoise
 mysql-connector-python
 django-cloudinary-storage
 openpyxl
+django-cors-headers
