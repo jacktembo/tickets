@@ -32,10 +32,15 @@ class TicketAdmin(admin.ModelAdmin):
     search_fields = ['passenger_first_name']
     list_per_page = 5
 
+
 class RouteAdmin(admin.ModelAdmin):
     list_display = [
         'bus', 'starting_place', 'destination', 'departure_time', 'price'
     ]
-    def departure_time(self)
+
+    def departure_time(self, route: Route):
+        return route.time
+
+
 admin.site.register(Route, RouteAdmin)
 admin.site.register(Ticket, TicketAdmin)
