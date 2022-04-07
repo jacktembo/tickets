@@ -10,13 +10,16 @@ class BusCompanyImageSerializer(serializers.ModelSerializer):
 
 
 class BusCompanySerializer(serializers.ModelSerializer):
-    bus_company_image = BusCompanyImageSerializer()
+    image = serializers.SerializerMethodField('company_image')
+
+    def company_image(self, bus_company: BusCompany):
+        return bus_company.images.image.url
 
     class Meta:
         model = BusCompany
         fields = [
             'id', 'company_name', 'company_phone_number', 'company_email', 'address',
-            'bus_company_image'
+            'image',
         ]
 
 
@@ -32,6 +35,7 @@ class PassengerSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'first_name', 'last_name', 'phone',
         ]
+
 
 class BulkRouteCreate(serializers.ListSerializer):
     def create(self, validated_data):

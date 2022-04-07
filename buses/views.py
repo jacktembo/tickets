@@ -14,7 +14,7 @@ from .serializers import *
 
 class BusCompanies(ListCreateAPIView):
     def get_queryset(self):
-        return BusCompany.objects.prefetch_related('bus_company_image').all()
+        return BusCompany.objects.prefetch_related('images').all()
 
     def get_serializer_class(self):
         return BusCompanySerializer
