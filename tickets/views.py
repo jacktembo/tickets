@@ -1,10 +1,8 @@
 from django.http import HttpResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
 from django.shortcuts import render
 from django.views import View
 import openpyxl
-from buses.models import Route, Bus
+from core.buses.models import Route, Bus
 
 
 def index(request):
