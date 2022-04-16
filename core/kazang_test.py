@@ -38,15 +38,15 @@ def get_balance():
     return auth_client().get('balance', None)
 
 
-def check_session(response):
+def is_active_session(response):
     if response.json().get('response_code', False) == 7 or response.json().get('response_code',
                                                                                False) == 8 or response.json().get(
         'response_code', False) == 9:
-        return 'expired'
+        return False
     elif response.json().get('response_code', False) == 0:
-        return 'valid'
+        return True
     else:
-        return 'error'
+        return False
 
 
 session_uuid = "9ad561ea-c233-4a12-9d76-be96d5c40bc6"
@@ -63,7 +63,7 @@ def product_list(session_uuid=None, request_reference=None):
     default_data = {
         'session_uuid': session_uuid
     }
-    r = requests.post(base_url + 'productList', data=json.dumps(data), headers=headers)
+    r = requests.post(base_url + 'productList', data=json.dumps(default_data), headers=headers)
     products = r.json().get('product_list', None)
     return products
 

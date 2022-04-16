@@ -1,6 +1,9 @@
 import requests
 import json
+import django
 from datetime import datetime
+from django.conf import settings
+from .models import KazangSession
 from time import sleep
 from threading import Thread
 
@@ -32,19 +35,31 @@ def get_new_session_uuid():
     return session_uuid
 
 
+def get_active_session_uuid():
+    """
+    Used for getting the last saved session uuid from the database.
+    """
+    session = KazangSession.objects.all().last()
+    return session.session_uuid
+
+def get_or_create_session_uuid():
+    db_session = KazangSession.objects.all().last().session_uuid
+    data = {"session_uuid": db_session}
+    products = requests.post(base_url + 'productList', data=json.dumps(data), headers=headers)
+    if products.json().get('response_code', False) == 0:
+        return db_session
+    else:
+        return get_new_session_uuid()
+
+session_uuid = get_or_create_session_uuid()
+
+
 def get_balance():
     return auth_client().get('balance', None)
 
-session_uuid = '85482502-95a1-4168-89a4-605e3180aae7'
-def check_session(response):
-    if response.json().get('response_code', False) == 7 or response.json().get('response_code',
-                                                                               False) == 8 or response.json().get(
-        'response_code', False) == 9:
-        return 'expired'
-    elif response.json().get('response_code', False) == 0:
-        return 'valid'
-    else:
-        return 'error'
+
+def is_session_active(response):
+    return response.json().get('response_code', False) == 0
 
 
 data = {
@@ -55,14 +70,9 @@ default_data = {
 }
 
 
-def product_list(session_uuid=None, request_reference=None):
-    default_data = {
-        'session_uuid': session_uuid
-    }
-    r = requests.post(base_url + 'productList', data=json.dumps(data), headers=headers)
-    products = r.json().get('product_list', None)
-    return products
-
+def product_list():
+    r = requests.post(base_url + 'productList', data=json.dumps(default_data), headers=headers)
+    return r.json()
 
 def find_product_from_method_name(method: str):
     """
@@ -93,8 +103,8 @@ def airtel_pay_payment(phone_number: str, amount):
     result = requests.post(base_url + "airtelPayPaymentConfirm", data=json.dumps(data), headers=headers)
     return result.json()
 
+
 def airtel_pay_query():
-    
     pass
     # airtel_reference = result.json().get('airtel_reference', False)
     # data['airtel_reference'] = airtel_reference

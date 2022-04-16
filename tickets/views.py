@@ -2,7 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.views import View
 import openpyxl
-from core.buses.models import Route, Bus
+from buses.models import Route, Bus
 
 
 def index(request):
