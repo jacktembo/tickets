@@ -6,6 +6,8 @@ from django.conf import settings
 from .models import KazangSession
 from time import sleep
 from threading import Thread
+import string
+import secrets
 
 now = datetime.now().isoformat()
 
@@ -42,7 +44,11 @@ def get_active_session_uuid():
     session = KazangSession.objects.all().last()
     return session.session_uuid
 
+
 def get_or_create_session_uuid():
+    """
+    Get the current active session id. If it does not exist, creates one and returns it.
+    """
     db_session = KazangSession.objects.all().last().session_uuid
     data = {"session_uuid": db_session}
     products = requests.post(base_url + 'productList', data=json.dumps(data), headers=headers)
@@ -51,11 +57,12 @@ def get_or_create_session_uuid():
     else:
         return get_new_session_uuid()
 
+
 session_uuid = get_or_create_session_uuid()
 
 
 def get_balance():
-    return auth_client().get('balance', None)
+    return product_list().get('balance', None)
 
 
 def is_session_active(response):
@@ -74,6 +81,7 @@ def product_list():
     r = requests.post(base_url + 'productList', data=json.dumps(default_data), headers=headers)
     return r.json()
 
+
 def find_product_from_method_name(method: str):
     """
     Get a product dictionary form an API method name
@@ -85,11 +93,15 @@ def find_product_from_method_name(method: str):
 
 
 def airtel_pay_payment(phone_number: str, amount):
+    alphabet = string.digits
+    code = ''.join(secrets.choice(alphabet) for i in range(6))
+    code2 = ''.join(secrets.choice(alphabet) for i in range(6))
+    code3 = ''.join(secrets.choice(alphabet) for i in range(6))
     data = {
         "session_uuid": session_uuid
     }
     """
-    Airtel Pay Payment workflow
+    Airtel Pay Payment step 1.
     :param phone_number:
     :param amount:
     :return:
@@ -100,44 +112,74 @@ def airtel_pay_payment(phone_number: str, amount):
     r = requests.post(base_url + "airtelPayPayment", data=json.dumps(data), headers=headers)
     confirmation_number = r.json().get('confirmation_number', False)
     data['confirmation_number'] = confirmation_number
-    result = requests.post(base_url + "airtelPayPaymentConfirm", data=json.dumps(data), headers=headers)
-    return result.json()
+    confirm = requests.post(base_url + "airtelPayPaymentConfirm", data=json.dumps(data), headers=headers)
+    return confirm.json()
 
 
-def airtel_pay_query():
-    pass
-    # airtel_reference = result.json().get('airtel_reference', False)
-    # data['airtel_reference'] = airtel_reference
-    # data['product_id'] = "5393"
-    # airtel_pay_query = requests.post(base_url + "airtelPayQuery", data=json.dumps(data), headers=headers)
-    # data['confirmation_number'] = airtel_pay_query.json().get('confirmation_number', False)
-    # airtel_pay_query_confirm = requests.post(base_url + "airtelPayQueryConfirm", data=json.dumps(data), headers=headers)
-    #
-    # return airtel_pay_query_confirm.json()
+def airtel_pay_query(phone_number, amount, airtel_reference):
+    alphabet = string.digits
+    code = ''.join(secrets.choice(alphabet) for i in range(6))
+    code2 = ''.join(secrets.choice(alphabet) for i in range(6))
+    code3 = ''.join(secrets.choice(alphabet) for i in range(6))
+    data['airtel_reference'] = airtel_reference
+    data['product_id'] = "5393"
+    data['wallet_msisdn'] = phone_number
+    data['amount'] = amount
+    airtel_pay_query = requests.post(base_url + "airtelPayQuery", data=json.dumps(data), headers=headers)
+    data['confirmation_number'] = airtel_pay_query.json().get('confirmation_number', False)
+    airtel_pay_query_confirm = requests.post(base_url + "airtelPayQueryConfirm", data=json.dumps(data), headers=headers)
+
+    return airtel_pay_query_confirm.json()
 
 
-def zamtelMoneyPay(phone_number: str, amount):
+def zamtel_money_pay(phone_number: str, amount):
+    alphabet = string.digits
+    code = ''.join(secrets.choice(alphabet) for i in range(6))
+    code2 = ''.join(secrets.choice(alphabet) for i in range(6))
+    code3 = ''.join(secrets.choice(alphabet) for i in range(6))
     data = {
         "session_uuid": session_uuid
     }
     """Zamtel Money Pay workflow"""
-    data['request_reference'] = '100402'
+    data['request_reference'] = code
     data['msisdn'] = phone_number
     data['amount'] = amount
-    data['product_id'] = '1706'
+    data['product_id'] = '5440'
     zamtel_money_pay = requests.post(base_url + 'zamtelMoneyPay', data=json.dumps(data), headers=headers)
-    data['request_reference'] = '128001'
-    data['confirmation_number'] = zamtel_money_pay.json().get('confirmation_number', None)
+    return zamtel_money_pay.json()
+
+def zamtel_money_pay_confirm(phone_number, amount, confirmation_number):
+    alphabet = string.digits
+    code = ''.join(secrets.choice(alphabet) for i in range(6))
+    code2 = ''.join(secrets.choice(alphabet) for i in range(6))
+    data['request_reference'] = code
+    data['confirmation_number'] = confirmation_number
+    data['request_reference'] = code2
+    data['msisdn'] = phone_number
+    data['amount'] = amount
     zamtel_pay_confirmation = requests.post(base_url + 'zamtelMoneyPayConfirm', data=json.dumps(data), headers=headers)
     return zamtel_pay_confirmation.json()
 
 
-def mtn_debit(phone_number: str, amount: float):
+def mtn_debit(phone_number: str, amount):
+    alphabet = string.digits
+    code = ''.join(secrets.choice(alphabet) for i in range(6))
+    code2 = ''.join(secrets.choice(alphabet) for i in range(6))
+    data['request_reference'] = code2
     data['wallet_msisdn'] = phone_number
     data['amount'] = amount
-    data['product_id'] = '1612'
+    data['product_id'] = '5120'
     r = requests.post(base_url + 'mtnDebit', data=json.dumps(data), headers=headers)
-    data['supplier_transaction_id'] = r.json().get('supplier_transaction_id', None)
+    return r.json()
+
+def mtn_debit_confirm(phone_number, amount, confirmation_number):
+    alphabet = string.digits
+    code = ''.join(secrets.choice(alphabet) for i in range(6))
+    code2 = ''.join(secrets.choice(alphabet) for i in range(6))
+    data['request_reference'] = code
+    data['supplier_transaction_id'] = confirmation_number
+    data['wallet_msisdn'] = phone_number
+    data['amount'] = amount
     data['product_id'] = '1613'
     approval = requests.post(base_url + 'mtnDebitApproval', data=json.dumps(data), headers=headers)
     data['confirmation_number'] = approval.json().get('confirmation_number', None)

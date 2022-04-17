@@ -27,6 +27,7 @@ urlpatterns = [
     path('bus-companies', views.BusCompanies.as_view()),
     path('bus-companies/<int:pk>', views.BusCompanyDetail.as_view()),
     path('tickets', views.Tickets.as_view()),
+    path('pay', views.pay),
     path('tickets/<str:pk>', views.TicketDetail.as_view()),
     path('price', views.CalculateTicketPrice.as_view()),
     path('seats', views.Seats.as_view()), # All seats: with their respective status.

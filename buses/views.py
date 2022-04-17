@@ -1,4 +1,7 @@
+from unittest import registerResult
+from django.http import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
+from mysqlx import RowResult
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication, SessionAuthentication
 from rest_framework.decorators import api_view, APIView, permission_classes
@@ -10,6 +13,8 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from .serializers import *
+from core import kazang
+from core import phone_numbers
 
 
 class BusCompanies(ListCreateAPIView):
@@ -127,6 +132,18 @@ class Tickets(ListCreateAPIView):
 
     def get_serializer_class(self):
         return TicketSerializer
+
+    def post(self, request, *args, **kwargs):
+        amount = 22000
+        phone_number = self.request.data['passenger_phone']
+        if phone_numbers.get_network('passenger_phone') == 'airtel':
+            airtel_reference = self.request.data['airtel_reference']
+            query = kazang.airtel_pay_query(phone_number, amount, airtel_reference)
+            if query['response_code'] == 0:
+                return self.create(request, *args, **kwargs)
+            else:
+                return Response("Payment Declined")
+
 
     authentication_classes = [
         TokenAuthentication, JWTAuthentication, BasicAuthentication,
@@ -406,3 +423,37 @@ class ScanView(APIView):
             return Response('Ticket Already Scanned')
         else:
             return Response('Invalid Ticket')
+
+
+
+@api_view(['POST'])
+def pay(request):
+    phone_number = request.data['passenger_phone']
+    amount = str(int(Route.objects.get(id=int(request.data['route'])).price * 100))
+    if phone_numbers.get_network(phone_number) == 'airtel':
+        r = kazang.airtel_pay_payment(phone_number, amount)
+        return Response({"reference_number": r['airtel_reference']})
+    elif phone_numbers.get_network(phone_number) == 'zamtel':
+        r = kazang.zamtel_money_pay(phone_number, amount)
+        return Response({'reference_number': r['confirmation_number']})
+    elif phone_numbers.get_network(phone_number) == 'mtn':
+        r = kazang.mtn_debit(phone_number, amount)
+        return Response({'reference_number': r.get('supplier_transaction_id', r)})
+    
+
+@api_view(['POST'])
+def pay_confirm(request):
+    phone_number = request.data['passenger_phone']
+    amount = str(int(Route.objects.get(id=int(request.data['route'])).price * 100))
+    reference_number = request.data['reference_number']
+    passenger_first_name = request.data.get('passenger_first_name', None)
+    passenger_last_name = request.data.get('passenger_last_name', None)
+    passenger_phone = phone_number
+    departure_date = date.fromisoformat(request.data.departure_date)
+    route = Route.objects.get(id=int(request.data.get('route', None)))
+    seat_number = int(request.data.get('seat_number', None))
+    if phone_numbers.get_network(phone_number) == 'airtel':
+        return Response(kazang.airtel_pay_query(phone_number, amount, reference_number))
+    elif phone_numbers.get_network(phone_number) == 'zamtel':
+        return Response('')
+    

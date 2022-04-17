@@ -92,22 +92,23 @@ def airtel_pay_payment(phone_number: str, amount):
     data['wallet_msisdn'] = phone_number
     data['amount'] = amount
     r = requests.post(base_url + "airtelPayPayment", data=json.dumps(data), headers=headers)
-    confirmation_number = r.json().get('confirmation_number', False)
-    data['confirmation_number'] = confirmation_number
-    result = requests.post(base_url + "airtelPayPaymentConfirm", data=json.dumps(data), headers=headers)
-    return result.json()
+    # confirmation_number = r.json().get('confirmation_number', False)
+    # data['confirmation_number'] = confirmation_number
+    # result = requests.post(base_url + "airtelPayPaymentConfirm", data=json.dumps(data), headers=headers)
+    # return result.json()
+    return r.json()
 
 
 def airtel_pay_query():
-    pass
-    # airtel_reference = result.json().get('airtel_reference', False)
-    # data['airtel_reference'] = airtel_reference
-    # data['product_id'] = "5393"
-    # airtel_pay_query = requests.post(base_url + "airtelPayQuery", data=json.dumps(data), headers=headers)
-    # data['confirmation_number'] = airtel_pay_query.json().get('confirmation_number', False)
-    # airtel_pay_query_confirm = requests.post(base_url + "airtelPayQueryConfirm", data=json.dumps(data), headers=headers)
-    #
-    # return airtel_pay_query_confirm.json()
+    result = ''
+    airtel_reference = result.json().get('airtel_reference', False)
+    data['airtel_reference'] = airtel_reference
+    data['product_id'] = "5393"
+    airtel_pay_query = requests.post(base_url + "airtelPayQuery", data=json.dumps(data), headers=headers)
+    data['confirmation_number'] = airtel_pay_query.json().get('confirmation_number', False)
+    airtel_pay_query_confirm = requests.post(base_url + "airtelPayQueryConfirm", data=json.dumps(data), headers=headers)
+
+    return airtel_pay_query_confirm.json()
 
 
 def zamtelMoneyPay(phone_number: str, amount):
