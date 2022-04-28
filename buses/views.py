@@ -423,58 +423,58 @@ class ScanView(APIView):
             return Response('Invalid Ticket')
 
 
-@api_view(['POST'])
-def pay(request):
-    phone_number = request.data['passenger_phone']
-    amount = str(int(Route.objects.get(id=int(request.data['route'])).price * 100))
-    if phone_numbers.get_network(phone_number) == 'airtel':
-        r = kazang.airtel_pay_payment(phone_number, amount)
-        return Response({"reference_number": r['airtel_reference']})
-    elif phone_numbers.get_network(phone_number) == 'zamtel':
-        r = kazang.zamtel_money_pay(phone_number, amount)
-        return Response({'reference_number': r['confirmation_number']})
-    elif phone_numbers.get_network(phone_number) == 'mtn':
-        r = kazang.mtn_debit(phone_number, amount)
-        return Response({'reference_number': r.get('supplier_transaction_id', r)})
-
-
-@api_view(['POST'])
-def pay_confirm(request):
-    phone_number = request.data['passenger_phone']
-    amount = str(int(Route.objects.get(id=int(request.data['route'])).price * 100))
-    reference_number = request.data['reference_number']
-    passenger_first_name = request.data.get('passenger_first_name', None)
-    passenger_last_name = request.data.get('passenger_last_name', None)
-    passenger_phone = phone_number
-    departure_date = date.fromisoformat(request.data['departure_date'])
-    route = Route.objects.get(id=int(request.data.get('route', None)))
-    seat_number = request.data.get('seat_number', None)
-    ticket = Ticket.objects.create(passenger_phone=passenger_phone, passenger_first_name=passenger_first_name,
-                                   passenger_last_name=passenger_last_name, departure_date=departure_date,
-                                   route=route, seat_number=int(seat_number)
-                                   )
-    serializer = TicketSerializer(ticket)
-    if phone_numbers.get_network(phone_number) == 'airtel':  # If the number is airtel, process accordingly.
-        confirm = kazang.airtel_pay_query(phone_number, amount, reference_number)
-        if not confirm.get('response_code', False) == 0:
-            return Response({"message": "success", "ticket": serializer.data,
-                             "ticket_url": f"https://all1zed-tickets.herokuapp.com/api/tickets/{ticket.ticket_number}"})
-        else:
-            return Response(
-                {"message": "declined", "reason": "customer has not yet approved the funds for the ticket."},
-                status=status.HTTP_402_PAYMENT_REQUIRED)
-
-    elif phone_numbers.get_network(phone_number) == 'zamtel':
-        confirm = kazang.zamtel_money_pay_confirm(phone_number, amount, reference_number)
-        if confirm.get('response_code', False) == 0:
-            return Response({"message": "success", "ticket": serializer.data,
-                             "ticket_url": f"https://all1zed-tickets.herokuapp.com/api/tickets/{ticket.ticket_number}"})
-        else:
-            return Response(
-                {"message": "declined", "reason": "customer has not yet approved the funds for the ticket."},
-                status=status.HTTP_402_PAYMENT_REQUIRED)
-
-    elif phone_numbers.get_network(phone_number) == 'mtn':
-        pass
-
-    
+# @api_view(['POST'])
+# def pay(request):
+#     phone_number = request.data['passenger_phone']
+#     amount = str(int(Route.objects.get(id=int(request.data['route'])).price * 100))
+#     if phone_numbers.get_network(phone_number) == 'airtel':
+#         r = kazang.airtel_pay_payment(phone_number, amount)
+#         return Response({"reference_number": r['airtel_reference']})
+#     elif phone_numbers.get_network(phone_number) == 'zamtel':
+#         r = kazang.zamtel_money_pay(phone_number, amount)
+#         return Response({'reference_number': r['confirmation_number']})
+#     elif phone_numbers.get_network(phone_number) == 'mtn':
+#         r = kazang.mtn_debit(phone_number, amount)
+#         return Response({'reference_number': r.get('supplier_transaction_id', r)})
+#
+#
+# @api_view(['POST'])
+# def pay_confirm(request):
+#     phone_number = request.data['passenger_phone']
+#     amount = str(int(Route.objects.get(id=int(request.data['route'])).price * 100))
+#     reference_number = request.data['reference_number']
+#     passenger_first_name = request.data.get('passenger_first_name', None)
+#     passenger_last_name = request.data.get('passenger_last_name', None)
+#     passenger_phone = phone_number
+#     departure_date = date.fromisoformat(request.data['departure_date'])
+#     route = Route.objects.get(id=int(request.data.get('route', None)))
+#     seat_number = request.data.get('seat_number', None)
+#     ticket = Ticket.objects.create(passenger_phone=passenger_phone, passenger_first_name=passenger_first_name,
+#                                    passenger_last_name=passenger_last_name, departure_date=departure_date,
+#                                    route=route, seat_number=int(seat_number)
+#                                    )
+#     serializer = TicketSerializer(ticket)
+#     if phone_numbers.get_network(phone_number) == 'airtel':  # If the number is airtel, process accordingly.
+#         confirm = kazang.airtel_pay_query(phone_number, amount, reference_number)
+#         if not confirm.get('response_code', False) == 0:
+#             return Response({"message": "success", "ticket": serializer.data,
+#                              "ticket_url": f"https://all1zed-tickets.herokuapp.com/api/tickets/{ticket.ticket_number}"})
+#         else:
+#             return Response(
+#                 {"message": "declined", "reason": "customer has not yet approved the funds for the ticket."},
+#                 status=status.HTTP_402_PAYMENT_REQUIRED)
+#
+#     elif phone_numbers.get_network(phone_number) == 'zamtel':
+#         confirm = kazang.zamtel_money_pay_confirm(phone_number, amount, reference_number)
+#         if confirm.get('response_code', False) == 0:
+#             return Response({"message": "success", "ticket": serializer.data,
+#                              "ticket_url": f"https://all1zed-tickets.herokuapp.com/api/tickets/{ticket.ticket_number}"})
+#         else:
+#             return Response(
+#                 {"message": "declined", "reason": "customer has not yet approved the funds for the ticket."},
+#                 status=status.HTTP_402_PAYMENT_REQUIRED)
+#
+#     elif phone_numbers.get_network(phone_number) == 'mtn':
+#         pass
+#
+#
