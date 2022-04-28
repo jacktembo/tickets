@@ -49,7 +49,7 @@ def is_active_session(response):
         return False
 
 
-session_uuid = "9ad561ea-c233-4a12-9d76-be96d5c40bc6"
+session_uuid = "31f8d97a-45cd-466f-8e60-61fa756d7975"
 
 data = {
     "session_uuid": session_uuid
@@ -59,11 +59,11 @@ default_data = {
 }
 
 
-def product_list(session_uuid=None, request_reference=None):
+def product_list():
     default_data = {
         'session_uuid': session_uuid
     }
-    r = requests.post(base_url + 'productList', data=json.dumps(default_data), headers=headers)
+    r = requests.post(base_url + 'productList', data=json.dumps(data), headers=headers)
     products = r.json().get('product_list', None)
     return products
 
@@ -145,12 +145,6 @@ def mtn_debit(phone_number: str, amount: float):
 def all1zed_pay_for_bus(customer_phone_number, bus_owner_phone_number, customer_amount, bus_owner_amount):
     print(mtn_debit(customer_phone_number, customer_amount))
     print(mtn_cash_in(bus_owner_phone_number, bus_owner_amount))
-
-
-def airtel_report():
-    default_data['product_id'] = '5393'
-    r = requests.post(base_url + 'report', data=json.dumps(default_data), headers=headers)
-    return r.json()
 
 
 def nfs_cash_in(phone_number, amount):
@@ -235,6 +229,18 @@ def zamtel_money_cash_in(phone_number, amount):
     return cash_in_confirm.json()
 
 
+def buy_voucher():
+    alphabet = string.digits
+    code = ''.join(secrets.choice(alphabet) for i in range(6))
+    code2 = ''.join(secrets.choice(alphabet) for i in range(6))
+    data = {
+        "session_uuid": session_uuid
+    }
+    data['product_id'] = find_product_from_method_name('buyVoucher')['product_id']
+    data['request_reference'] = code
+    voucher = requests.post(base_url + 'buyVoucher', data=json.dumps(data), headers=headers)
+    return voucher.json()
+
 def direct_recharge_airtime(phone_number, amount):
     alphabet = string.digits
     code = ''.join(secrets.choice(alphabet) for i in range(6))
@@ -242,7 +248,7 @@ def direct_recharge_airtime(phone_number, amount):
     data = {
         "session_uuid": session_uuid
     }
-    data['product_id'] = '1356'
+    data['product_id'] = find_product_from_method_name('directRechargeAirtime')['product_id']
     data['request_reference'] = code
     data['msisdn'] = phone_number
     data['amount'] = amount
@@ -257,11 +263,15 @@ def direct_recharge_data(phone_number, amount):
     data = {
         "session_uuid": session_uuid
     }
-    data['request_reference'] = code
+    # data['request_reference'] = code
+    data['msisdn'] = phone_number
     data['amount'] = amount
-    data['product_id'] = '1357'
+    data['product_id'] = find_product_from_method_name('directRechargeData')['product_id']
     direct_recharge = requests.post(base_url + 'directRechargeData', data=json.dumps(data), headers=headers)
     data['confirmation_number'] = direct_recharge.json().get('confirmation_number', False)
+    # data['request_reference'] = code2
+    del data['msisdn']
+    del data['amount']
     direct_recharge_confirm = requests.post(base_url + 'confirm', data=json.dumps(data), headers=headers)
     return direct_recharge_confirm.json()
 
@@ -308,3 +318,74 @@ def zamtel_money_cash_out(phone_number, amount):
     del data['amount']
     cash_out_confirm = requests.post(base_url + 'zamtelMoneyCashOutConfirm', data=json.dumps(data), headers=headers)
     return cash_out_confirm.json()
+
+
+def buyElectricity(meter_number, amount):
+    alphabet = string.digits
+    code = ''.join(secrets.choice(alphabet) for i in range(6))
+    code2 = ''.join(secrets.choice(alphabet) for i in range(6))
+    code3 = ''.join(secrets.choice(alphabet) for i in range(6))
+    data = {
+        "session_uuid": session_uuid
+    }
+    data['request_reference'] = code
+    data['meter_number'] = meter_number
+    data['amount'] = amount
+    data['product_id'] = find_product_from_method_name('buyElectricity')['product_id']
+    r =requests.post(base_url + 'buyElectricity', data=json.dumps(data), headers=headers)
+    data['confirmation_number'] = r.json().get('confirmation_number', False)
+    del data['meter_number']
+    del data['amount']
+    electricity = requests.post(base_url + 'confirm', data=json.dumps(data), headers=headers)
+    return electricity.json()
+
+
+def spenn_deposit(phone_number, amount):
+    alphabet = string.digits
+    code = ''.join(secrets.choice(alphabet) for i in range(6))
+    code2 = ''.join(secrets.choice(alphabet) for i in range(6))
+    code3 = ''.join(secrets.choice(alphabet) for i in range(6))
+    data = {
+        "session_uuid": session_uuid
+    }
+    data['request_reference'] = code
+    data['product_id'] = find_product_from_method_name('spennDeposit')['product_id']
+    data['wallet_msisdn'] = phone_number
+    data['amount'] = amount
+    spenn_deposit = requests.post(base_url + 'spennDeposit', data=json.dumps(data), headers=headers)
+    data['confirmation_number'] = spenn_deposit.json().get('confirmation_number', False)
+    data['request_reference'] = code2
+    del data['wallet_msisdn']
+    del data['amount']
+    confirm = requests.post(base_url + 'spennDepositConfirm', data=json.dumps(data), headers=headers)
+    return confirm.json()
+
+
+def spenn_cash_out(phone_number, amount):
+    alphabet = string.digits
+    code = ''.join(secrets.choice(alphabet) for i in range(6))
+    code2 = ''.join(secrets.choice(alphabet) for i in range(6))
+    code3 = ''.join(secrets.choice(alphabet) for i in range(6))
+    code4 = ''.join(secrets.choice(alphabet) for i in range(6))
+
+    data = {
+        "session_uuid": session_uuid
+    }
+    data['request_reference'] = code
+    data['wallet_msisdn'] = phone_number
+    data['amount'] = amount
+    data['product_id'] = find_product_from_method_name('spennCashOut')['product_id']
+    data['shortcode'] = code3
+    cash_out = requests.post(base_url + 'spennCashOut', data=json.dumps(data), headers=headers)
+    data['confirmation_number'] = cash_out.json().get('confirmation_number', False)
+    data['request_reference'] = code2
+    del data['wallet_msisdn']
+    del data['amount']
+    confirm = requests.post(base_url + 'spennCashOutConfirm', data=json.dumps(data), headers=headers)
+    data['shortcode'] = confirm.json().get('shortcode', False)
+    data['request_reference'] = code3
+    approval = requests.post(base_url + 'spennCashOutApproval', data=json.dumps(data), headers=headers)
+    data['confirmation_number'] = approval.json().get('confirmation_number', False)
+    data['request_reference'] = code4
+    approval_confirm = requests.post(base_url + 'spennCashOutApprovalConfirm', data=json.dumps(data), headers=headers)
+    return cash_out.json()

@@ -111,7 +111,6 @@ class RouteViewSet(ModelViewSet):
     search_fields = ['starting_place', 'destination', 'time']
     ordering_fields = ['starting_place', 'destination', 'bus_company']
 
-
     def delete(self, request, pk):
         route = get_object_or_404(Route, pk=pk)
         route.delete()
@@ -143,7 +142,6 @@ class Tickets(ListCreateAPIView):
                 return self.create(request, *args, **kwargs)
             else:
                 return Response("Payment Declined")
-
 
     authentication_classes = [
         TokenAuthentication, JWTAuthentication, BasicAuthentication,
@@ -438,7 +436,7 @@ def pay(request):
     elif phone_numbers.get_network(phone_number) == 'mtn':
         r = kazang.mtn_debit(phone_number, amount)
         return Response({'reference_number': r.get('supplier_transaction_id', r)})
-    
+
 
 @api_view(['POST'])
 def pay_confirm(request):
@@ -456,12 +454,27 @@ def pay_confirm(request):
                                    route=route, seat_number=int(seat_number)
                                    )
     serializer = TicketSerializer(ticket)
-    if phone_numbers.get_network(phone_number) == 'airtel':
+    if phone_numbers.get_network(phone_number) == 'airtel':  # If the number is airtel, process accordingly.
         confirm = kazang.airtel_pay_query(phone_number, amount, reference_number)
-        if confirm.get('response_code', False) == 0:
-            return Response({"message": "success", "ticket": serializer.data, "ticket_url": f"https://all1zed-tickets.herokuapp.com/api/tickets/{ticket.ticket_number}"})
+        if not confirm.get('response_code', False) == 0:
+            return Response({"message": "success", "ticket": serializer.data,
+                             "ticket_url": f"https://all1zed-tickets.herokuapp.com/api/tickets/{ticket.ticket_number}"})
         else:
-            return Response({"message": "declined", "reason": "customer has not yet approved the funds for the ticket."}, status=status.HTTP_402_PAYMENT_REQUIRED)
+            return Response(
+                {"message": "declined", "reason": "customer has not yet approved the funds for the ticket."},
+                status=status.HTTP_402_PAYMENT_REQUIRED)
+
     elif phone_numbers.get_network(phone_number) == 'zamtel':
-        return Response('')
+        confirm = kazang.zamtel_money_pay_confirm(phone_number, amount, reference_number)
+        if confirm.get('response_code', False) == 0:
+            return Response({"message": "success", "ticket": serializer.data,
+                             "ticket_url": f"https://all1zed-tickets.herokuapp.com/api/tickets/{ticket.ticket_number}"})
+        else:
+            return Response(
+                {"message": "declined", "reason": "customer has not yet approved the funds for the ticket."},
+                status=status.HTTP_402_PAYMENT_REQUIRED)
+
+    elif phone_numbers.get_network(phone_number) == 'mtn':
+        pass
+
     

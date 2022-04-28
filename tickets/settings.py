@@ -119,12 +119,24 @@ WSGI_APPLICATION = 'tickets.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-DATABASES = {
+dev_db = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3')
     }
 }
+prod_db = {
+    'default': {
+        'NAME': 'allzedco_buses',
+        'ENGINE': 'mysql.connector.django',
+        'USER': 'allzedco_root',
+        'PASSWORD': 'Zambia2022!',
+        'OPTIONS': {
+          'autocommit': True,
+        },
+    }
+}
+DATABASES = prod_db
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
