@@ -18,13 +18,13 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include, re_path
 
-admin.AdminSite.site_header = 'All1Zed Ticketing System - Administration'
-admin.AdminSite.site_title = 'All1Zed Tickets'
+admin.AdminSite.site_header = 'All1Zed Bus Ticketing System'
+admin.AdminSite.site_title = 'All1Zed Bus Tickets'
 from . import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.index),
+    path('', include('buses.urls')),
     path('api/', include('buses.urls')),
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.jwt')),

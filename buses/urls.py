@@ -18,12 +18,13 @@ from django.conf.urls.static import static
 from django.urls import path
 from rest_framework.routers import DefaultRouter
 
-from . import views
-
+from . import views, views2
 router = DefaultRouter()
 router.register('buses', views.BusViewSet)
 router.register('routes', views.RouteViewSet, basename='RouteViewSet')
+
 urlpatterns = [
+    path('', views2.index, name='index'),
     path('bus-companies', views.BusCompanies.as_view()),
     path('bus-companies/<int:pk>', views.BusCompanyDetail.as_view()),
     path('tickets', views.Tickets.as_view()),
