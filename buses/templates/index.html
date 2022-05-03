@@ -400,7 +400,7 @@
         <div class="w-full h-auto py-7 px-2 md:px-6 flex items-center justify-around flex-wrap gap-3">
             {% for bus_company in bus_companies %}
                 <a
-                        href="">
+                        href="{% url 'bus-company-detail' pk=bus_company.pk %}">
                     <section
                             class="w-[140px] transition-transform duration-300 hover:scale-[1.1] md:w-[430px] shadow-lg mt-8 md:h-[190px] h-auto bg-blue-400 ring-1 ring-blue-400 rounded-xl overflow-hidden">
                         <div class="w-full h-[140px] bg-white flex items-center justify-center"><img

@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% block title %}
+{% endblock %}
+{% block stylesheet %}
+    <style>
+        @media screen and (max-width: 768px) {
+            .btn-outline-success {
+                display: none;
+            }
+        }
+
+        .client-form {
+            margin-top: 7rem;
+        }
+
+        .mb-3 {
+            margin: 1rem;
+        }
+
+        label {
+            font-size: 110%;
+            color: dodgerblue;
+            font-weight: bold;
+        }
+
+        input {
+            margin-bottom: 2rem !important;
+        }
+
+        .front-text {
+        {#width: 80% !important;#} padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        .main-header {
+            color: dodgerblue;
+            font-weight: bold;
+        }
+
+    </style>
+{% endblock %}
+{% block content %}
+
+    <div class="client-form front-text">
+        <div class="card">
+            <div class="card-body mb-3">
+                <h2 class="main-header">{{ bus_company.company_name }} Bus</h2>
+                <p>
+                    Buy {{ bus_company.company_name }} Bus Ticket Online Now. Please fill in the form below to proceed
+                    with the checkout process.
+                </p>
+            </div>
+        </div>
+        <form action="">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="exampleFormControlInput1" class="form-label">Full Name</label>
+                <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Covid Banda"
+                       name="client-full-name" maxlength="20" required>
+            </div>
+            <div class="mb-3">
+                <label for="exampleFormControlInput1" class="form-label">Phone Number</label>
+                <input type="number" class="form-control" id="exampleFormControlInput1" placeholder="097xxxxxxx"
+                       name="client-phone-number" maxlength="10" required>
+            </div>
+            <div class="mb-3">
+                <label for="exampleFormControlInput1" class="form-label">Select Date Of Travel</label>
+                <input type="date" class="form-control" id="exampleFormControlInput1" placeholder=""
+                       name="departure-date" required>
+            </div>
+            <div class="mb-3">
+                <label for="exampleDataList" class="form-label">Select A Route</label>
+                <input class="form-control" list="datalistOptions" id="exampleDataList" placeholder="Type to search..."
+                       name="route" required>
+                <datalist id="datalistOptions" class="">
+                    {% for route in routes %}
+                        <option value="{{ route }}">
+                        {% empty %}
+                        <option value="---"></option>
+                    {% endfor %}
+                    
+                </datalist>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="inputState" class="form-label">Choose Seat Number</label>
+                <select id="inputState" class="form-select" required>
+                    <option selected>Choose...</option>
+                    <option value="22">22 - Available</option>
+                    <option value="22" disabled>23 - Taken</option>
+                    <option value="22">44 - Available</option>
+                </select>
+            </div>
+            <div class="col-12 mb-3">
+                <button type="submit" class="btn btn-primary">Pay Now</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}
