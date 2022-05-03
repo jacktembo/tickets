@@ -36,13 +36,22 @@
             color: dodgerblue;
             font-weight: bold;
         }
+
         .card-body {
             background-color: rgb(241, 60, 172);
         }
+
         .card-body h2 {
             color: white;
         }
-
+        .list-group {
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+        .confirm-text {
+            padding: 1rem;
+            color: orangered;
+        }
     </style>
 {% endblock %}
 {% block content %}
@@ -52,40 +61,19 @@
             <div class="card-body mb-3">
                 <h2 class="main-header">{{ bus_company.company_name }}</h2>
                 <p>
-                    Buy {{ bus_company.company_name }} Bus Ticket Online Now. Please fill in the form below to proceed
-                    with the checkout process.
+                    On this step, you are required to choose a seat number.
                 </p>
             </div>
         </div>
-        <form action="{% url 'bus-company-detail' pk=bus_company.pk %}" method="post">
+        <ul class="list-group">
+            <strong class="confirm-text">Please Confirm your ticket information below:</strong>
+            <li class="list-group-item"><strong>Full Name:</strong> {{ client_full_name }}</li>
+            <li class="list-group-item"><strong>Phone Number:</strong> {{ client_phone_number }}</li>
+            <li class="list-group-item"><strong>Departure Date:</strong> {{ departure_date }}</li>
+            <li class="list-group-item"><strong>Route:</strong> {{ route }}</li>
+        </ul>
+        <form action="">
             {% csrf_token %}
-            <div class="mb-3">
-                <label for="exampleFormControlInput1" class="form-label">Full Name</label>
-                <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Covid Banda"
-                       name="client-full-name" maxlength="20" required>
-            </div>
-            <div class="mb-3">
-                <label for="exampleFormControlInput1" class="form-label">Phone Number</label>
-                <input type="number" class="form-control" id="exampleFormControlInput1" placeholder="097xxxxxxx"
-                       name="client-phone-number" maxlength="10" required>
-            </div>
-            <div class="mb-3">
-                <label for="exampleFormControlInput1" class="form-label">Select Date Of Travel</label>
-                <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="dd/mm/yyyy"
-                       name="departure-date" required onfocus="(this.type='date')">
-            </div>
-            <div class="mb-3">
-                <label for="route" class="form-label">Select A Route</label>
-                <select id="route" class="form-select" required name="route">
-                    <option selected disabled>Choose...</option>
-                    {% for route in routes %}
-                        <option value="{{ route.id }}">{{ route }}</option>
-                        {% empty %}
-                        <option value="22">None</option>
-                    {% endfor %}
-
-                </select>
-            </div>
             <div class="col-md-4 mb-3">
                 <label for="inputState" class="form-label">Choose Seat Number</label>
                 <select id="inputState" class="form-select" required>
@@ -100,7 +88,7 @@
                 </select>
             </div>
             <div class="col-12 mb-3">
-                <button type="submit" class="btn btn-primary">Next</button>
+                <button type="submit" class="btn btn-primary">Pay Now</button>
             </div>
         </form>
     </div>
