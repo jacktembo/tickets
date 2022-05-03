@@ -75,38 +75,21 @@
                        name="departure-date" required onfocus="(this.type='date')">
             </div>
             <div class="mb-3">
-                <label for="exampleDataList" class="form-label">Select A Route</label>
-                <input class="form-control" list="datalistOptions" id="exampleDataList" placeholder="Type to search..."
-                       name="route" required>
-                <datalist id="datalistOptions" class="">
+                <label for="route" class="form-label">Select A Route</label>
+                <select id="route" class="form-select" required>
+                    <option selected disabled>Choose...</option>
                     {% for route in routes %}
-                        <option value="{{ route }}">
+                        <option value="22">{{ route }}</option>
                         {% empty %}
-                        <option value="---"></option>
+                        <option value="22">None</option>
                     {% endfor %}
-                    
-                </datalist>
+
+                </select>
             </div>
             <div class="col-md-4 mb-3">
                 <label for="inputState" class="form-label">Choose Seat Number</label>
                 <select id="inputState" class="form-select" required>
-                    <option selected>Choose...</option>
-                    <option value="22">22 - Available</option>
-                    <option value="22" disabled>23 - Taken</option>
-                    <option value="22">44 - Available</option>
-                    <option selected>Choose...</option>
-                    <option value="22">22 - Available</option>
-                    <option value="22" disabled>23 - Taken</option>
-                    <option value="22">44 - Available</option>
-                    <option selected>Choose...</option>
-                    <option value="22">22 - Available</option>
-                    <option value="22" disabled>23 - Taken</option>
-                    <option value="22">44 - Available</option>
-                    <option selected>Choose...</option>
-                    <option value="22">22 - Available</option>
-                    <option value="22" disabled>23 - Taken</option>
-                    <option value="22">44 - Available</option>
-                    <option selected>Choose...</option>
+                    <option selected disabled>Choose...</option>
                     <option value="22">22 - Available</option>
                     <option value="22" disabled>23 - Taken</option>
                     <option value="22">44 - Available</option>
