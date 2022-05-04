@@ -81,8 +81,12 @@
             <li class="list-group-item"><strong>Departure Date:</strong> {{ departure_date }}</li>
             <li class="list-group-item"><strong>Route:</strong> {{ route }}</li>
         </ul>
-        <form action="">
+        <form action="{% url 'select-seat' %}" method="post">
             {% csrf_token %}
+            <input type="hidden" name="client-full-name" id="client-full-name" value="{{ client_full_name }}">
+            <input type="hidden" name="client-phone-number" value="{{ client_phone_number }}">
+            <input type="hidden" name="departure-date" value="{{ departure_date }}">
+            <input type="hidden" name="route" value="{{ route.id }}">
             <div class="col-md-4 mb-3">
                 <label for="inputState" class="form-label">Choose Seat Number</label>
                 <select id="inputState" class="form-select" required name="seat-number">

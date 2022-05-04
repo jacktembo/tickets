@@ -49,7 +49,7 @@ def is_active_session(response):
         return False
 
 
-session_uuid = "31f8d97a-45cd-466f-8e60-61fa756d7975"
+session_uuid = 'dd18a959-c494-4bde-b39e-ae2479e0098d'
 
 data = {
     "session_uuid": session_uuid
@@ -111,7 +111,7 @@ def airtel_pay_query():
     return airtel_pay_query_confirm.json()
 
 
-def zamtelMoneyPay(phone_number: str, amount):
+def zamtel_money_pay(phone_number: str, amount):
     data = {
         "session_uuid": session_uuid
     }
@@ -164,7 +164,7 @@ def nfs_cash_in(phone_number, amount):
     del data['amount']
     del data['reference']
     nfs_cash_in_confirm = requests.post(base_url + 'nfsCashInConfirm', data=json.dumps(data), headers=headers)
-    return  nfs_cash_in_confirm.json()
+    return nfs_cash_in_confirm.json()
 
 
 def nfs_cash_out(phone_number, amount):
@@ -207,6 +207,7 @@ def mtn_cash_in(phone_number, amount):
     del data['amount']
     cash_in_confirm = requests.post(base_url + 'mtnCashInSubmitData', data=json.dumps(data), headers=headers)
     return cash_in_confirm.json()
+
 
 
 def zamtel_money_cash_in(phone_number, amount):
