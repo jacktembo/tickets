@@ -27,7 +27,7 @@ class BusCompanyAdmin(admin.ModelAdmin):
 
 class TicketAdmin(admin.ModelAdmin):
     list_display = [
-        'ticket_number', 'passenger_first_name', 'passenger_last_name', 'date_bought'
+        'ticket_number', 'passenger_first_name', 'passenger_last_name', 'date_bought', 'departure_date'
     ]
     search_fields = ['passenger_first_name']
     list_per_page = 5

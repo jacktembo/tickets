@@ -52,6 +52,15 @@
             padding: 1rem;
             color: orangered;
         }
+        .available {
+            color: #0f640f;
+            font-weight: bold;
+            font-size: 120%;
+        }
+        .taken {
+            color: red;
+            font-size: 120%;
+        }
     </style>
 {% endblock %}
 {% block content %}
@@ -76,15 +85,18 @@
             {% csrf_token %}
             <div class="col-md-4 mb-3">
                 <label for="inputState" class="form-label">Choose Seat Number</label>
-                <select id="inputState" class="form-select" required>
+                <select id="inputState" class="form-select" required name="seat-number">
                     <option selected disabled>Choose...</option>
-                    <option value="22">22 - Available</option>
-                    <option value="22" disabled>23 - Taken</option>
-                    <option value="22">44 - Available</option>
-                    <option selected>Choose...</option>
-                    <option value="22">22 - Available</option>
-                    <option value="22" disabled>23 - Taken</option>
-                    <option value="22">44 - Available</option>
+                    {% for seat, status in seats.items %}
+                        {% if status == "available" %}
+                            <option value="{{ seat }}" class="available">{{ seat }} - {{ status }}</option>
+                        {% endif %}
+                        {% if status != "available" %}
+                            <option value="" disabled class="taken">{{ seat }} - {{ status }}</option>
+                        {% endif %}
+                    {% endfor %}
+
+
                 </select>
             </div>
             <div class="col-12 mb-3">
