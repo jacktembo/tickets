@@ -57,12 +57,17 @@
                 </p>
             </div>
         </div>
-        <form action="{% url 'bus-company-detail' pk=bus_company.pk %}" method="post">
+        <form action="{% url 'bus-company-detail' pk=bus_company.pk %}" method="post" onSubmit="document.getElementById('submit-button').disabled=true; document.getElementById('submit-button').innerHTML='Please Wait...';">
             {% csrf_token %}
             <div class="mb-3">
-                <label for="exampleFormControlInput1" class="form-label">Full Name</label>
-                <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Covid Banda"
-                       name="client-full-name" maxlength="20" required>
+                <label for="exampleFormControlInput1" class="form-label">First Name</label>
+                <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Covid"
+                       name="client-first-name" maxlength="20" required>
+            </div>
+            <div class="mb-3">
+                <label for="exampleFormControlInput2" class="form-label">Last Name</label>
+                <input type="text" class="form-control" id="exampleFormControlInput2" placeholder="Banda"
+                       name="client-last-name" maxlength="20" required>
             </div>
             <div class="mb-3">
                 <label for="exampleFormControlInput1" class="form-label">Phone Number</label>
@@ -81,14 +86,14 @@
                     {% for route in routes %}
                         <option value="{{ route.id }}">{{ route }}</option>
                         {% empty %}
-                        <option value="22">None</option>
+                        <option value="">None</option>
                     {% endfor %}
 
                 </select>
             </div>
 
             <div class="col-12 mb-3">
-                <button type="submit" class="btn btn-primary">Next</button>
+                <button type="submit" class="btn btn-primary submit-button" id="submit-button">Next</button>
             </div>
         </form>
     </div>

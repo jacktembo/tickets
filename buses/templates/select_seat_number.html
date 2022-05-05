@@ -76,14 +76,16 @@
         </div>
         <ul class="list-group">
             <strong class="confirm-text">Please Confirm your ticket information below:</strong>
-            <li class="list-group-item"><strong>Full Name:</strong> {{ client_full_name }}</li>
+            <li class="list-group-item"><strong>First Name:</strong> {{ client_first_name }}</li>
+            <li class="list-group-item"><strong>Last Name:</strong> {{ client_last_name }}</li>
             <li class="list-group-item"><strong>Phone Number:</strong> {{ client_phone_number }}</li>
             <li class="list-group-item"><strong>Departure Date:</strong> {{ departure_date }}</li>
             <li class="list-group-item"><strong>Route:</strong> {{ route }}</li>
         </ul>
-        <form action="{% url 'select-seat' %}" method="post">
+        <form action="{% url 'select-seat' %}" method="post" onSubmit="document.getElementById('submit-button').disabled=true; document.getElementById('submit-button').innerHTML='Please Wait...';">
             {% csrf_token %}
-            <input type="hidden" name="client-full-name" id="client-full-name" value="{{ client_full_name }}">
+            <input type="hidden" name="client-first-name" id="client-first-name" value="{{ client_first_name }}">
+            <input type="hidden" name="client-last-name" id="client-last-name" value="{{ client_last_name }}">
             <input type="hidden" name="client-phone-number" value="{{ client_phone_number }}">
             <input type="hidden" name="departure-date" value="{{ departure_date }}">
             <input type="hidden" name="route" value="{{ route.id }}">
@@ -104,7 +106,7 @@
                 </select>
             </div>
             <div class="col-12 mb-3">
-                <button type="submit" class="btn btn-primary">Pay Now</button>
+                <button type="submit" class="btn btn-primary submit-button" id="submit-button">Pay Now</button>
             </div>
         </form>
     </div>
