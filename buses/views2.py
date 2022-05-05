@@ -6,8 +6,9 @@ from django.http import HttpResponse
 from core import phone_numbers, kazang
 from . import sms
 from .models import *
+from internal.models import *
 
-all1zed_commission = 1
+all1zed_commission = int(All1zedBusCommission.objects.all()[0].commission_per_ticket)
 
 
 def index(request):
