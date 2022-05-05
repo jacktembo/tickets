@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'cloudinary',
     'buses',
     'core',
+    'internal',
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework.authtoken',
@@ -136,7 +137,7 @@ prod_db = {
         },
     }
 }
-DATABASES = dev_db
+DATABASES = prod_db
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
