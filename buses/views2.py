@@ -2,6 +2,8 @@ from datetime import datetime, date, time, timedelta
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
+from django.views.generic import TemplateView
+from django_weasyprint import WeasyTemplateResponseMixin
 
 from core import phone_numbers, kazang
 from . import sms
@@ -176,4 +178,41 @@ def payment_approval(request):
                 return HttpResponse('There was a problem processing your transaction. Please try again.')
         else:
             return HttpResponse('There was a problem processing your transaction. Please try again.')
+
+
+def ticket(request):
+    return render(request, 'ticket.html')
+
+
+class DownloadView(WeasyTemplateResponseMixin, TemplateView):
+    def get_context_data(self, **kwargs):
+        self.ticket_number = self.kwargs['ticket_number']
+        ticket_number = self.ticket_number
+        ticket = get_object_or_404(Ticket, ticket_number=ticket_number)
+        bus = ticket.bus
+        client_first_name = ticket.passenger_first_name
+        client_last_name = ticket.passenger_last_name
+        client_phone_number = ticket.passenger_phone
+        departure_date = ticket.departure_date
+        route = ticket.route
+        departure_time = route.time.strftime("%H:%M hrs")
+        seat_number = ticket.seat_number
+        ticket_price = route.price
+        bus_company_image_url = bus.bus_company.images.image.url
+        qrcode_image_url = f'https://api.qrserver.com/v1/create-qr-code/?data={ticket_number}&size=200x200&format=svg'
+        context = {
+            'ticket': ticket, 'bus': bus, 'client_first_name': client_first_name,
+            'client_last_name': client_last_name, 'client_phone_number': client_phone_number,
+            'departure_date': departure_date, 'route': route, 'seat_number': seat_number,
+            'ticket_price': ticket_price, 'qrcode_image_url': qrcode_image_url,
+            'departure_time': departure_time, 'banner_image_url': bus_company_image_url,
+            'ticket_number': ticket_number
+        }
+        return context
+
+    template_name = 'ticket.html'
+
+    def get_pdf_filename(self):
+        return 'All1Zed-ticket-{at}.pdf'
+
 

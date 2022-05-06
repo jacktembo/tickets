@@ -44,6 +44,8 @@ urlpatterns = [
     path('<int:pk>/detail', views2.bus_company_detail, name='bus-company-detail'),
     path('select-seat', views2.mobile_payment, name='select-seat'),
     path('payment-approval', views2.payment_approval, name='payment-approval'),
+    path('ticket', views2.ticket, name='ticket'),
+    path('<ticket_number>/download', views2.DownloadView.as_view(), name='ticket-download'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += router.urls
