@@ -245,4 +245,9 @@ def scan_by_ticket_number(request):
             return HttpResponse(str(scan_ticket(ticket_number)) == 'yoo')
 
 
-
+def terms(request):
+    terms = TermsAndConditions.objects.all().first()
+    context = {
+        'terms': terms
+    }
+    return render(request, 'terms_and_conditions.html', context)

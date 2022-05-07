@@ -112,7 +112,7 @@
                 <li class="nav-item dropdown">
                     <a
                             class="nav-link dropdown-toggle"
-                            href="#"
+                            href=""
                             id="navbarScrollingDropdown"
                             role="button"
                             data-bs-toggle="dropdown"
@@ -125,7 +125,7 @@
                             aria-labelledby="navbarScrollingDropdown"
                     >
                         {% if request.user.is_staff %}
-                            <li><a class="dropdown-item" href="">Verify By Ticket Number</a></li>
+                            <li><a class="dropdown-item" href="{% url 'verify-by-ticket-number' %}">Verify By Ticket Number</a></li>
                             <li><a class="dropdown-item" href="">Verify By QRCode Scanning</a></li>
                         {% endif %}
 
@@ -147,8 +147,8 @@
                             aria-labelledby="navbarScrollingDropdown"
                     >
                         {% if request.user.is_staff %}
-                            <li><a class="dropdown-item" href="">Buyer Ts & Cs</a></li>
-                            <li><a class="dropdown-item" href="">Bus Operator Ts & Cs</a></li>
+                            <li><a class="dropdown-item" href="{% url 'terms' %}">Buyer Ts & Cs</a></li>
+                            <li><a class="dropdown-item" href="{% url 'terms' %}#event">Bus Operator Ts & Cs</a></li>
                             <li><a class="dropdown-item" href="">Download Ticket
                                 List</a></li>
                         {% endif %}
@@ -162,7 +162,7 @@
                 </li>
                 {% if request.user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link" href="">Logout</a>
+                        <a class="nav-link" href="https://buses.all1zed.com/admin/logout">Logout</a>
                     </li>
                 {% endif %} {% if request.user.is_anonymous %}
                 <li class="nav-item">
