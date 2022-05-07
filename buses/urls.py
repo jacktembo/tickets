@@ -46,6 +46,6 @@ urlpatterns = [
     path('payment-approval', views2.payment_approval, name='payment-approval'),
     path('ticket', views2.ticket, name='ticket'),
     path('<ticket_number>/download', views2.DownloadView.as_view(), name='ticket-download'),
-
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    path('verify-ticket', views2.scan_by_ticket_number, name='verify-by-ticket-number'),
+              ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += router.urls

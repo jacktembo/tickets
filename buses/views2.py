@@ -1,5 +1,6 @@
 from datetime import datetime, date, time, timedelta
 
+from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from django.views.generic import TemplateView
@@ -213,6 +214,35 @@ class DownloadView(WeasyTemplateResponseMixin, TemplateView):
     template_name = 'ticket.html'
 
     def get_pdf_filename(self):
-        return 'All1Zed-ticket-{at}.pdf'
+        return f'All1Zed-ticket-{self.ticket_number}.pdf'
+
+def scan_ticket(ticket_number):
+    ticket = Ticket.objects.filter(ticket_number=ticket_number)
+    if ticket.exists() and not ticket.first().scanned:
+        ticket.update(scanned=True)
+        return 'verified'
+    elif ticket.exists() and ticket.first().scanned:
+        return 'scanned'
+    else:
+        return 'invalid'
+
+
+def scan_by_ticket_number(request):
+    if request.method == 'GET':
+        return render(request, 'verify_ticket.html')
+    elif request.method == 'POST':
+        ticket_number = request.POST.get('ticket_number', False)
+        if scan_ticket(ticket_number) == 'verified':
+            messages.success(request, 'Verified Successfully')
+            return redirect('verify-by-ticket-number')
+        elif scan_ticket(ticket_number) == 'scanned':
+            messages.error(request, 'Ticket Already Scanned')
+            return redirect('verify-by-ticket-number')
+        elif scan_ticket(ticket_number) == ('invalid'):
+            messages.error(request, 'Invalid Ticket Number!')
+            return redirect('verify-by-ticket-number')
+        else:
+            return HttpResponse(str(scan_ticket(ticket_number)) == 'yoo')
+
 
 
