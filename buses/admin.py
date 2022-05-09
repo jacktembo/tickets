@@ -1,10 +1,10 @@
 from django.contrib.auth.models import User
 from django.contrib import admin
 from django.db.models import Sum
-from django.http import request
-
+from datetime import date
 from .models import *
 from internal.models import *
+
 all1zed_commission = float(All1zedBusCommission.objects.all().first().commission_per_ticket)
 
 
@@ -34,7 +34,7 @@ class BusAdmin(admin.ModelAdmin):
     inlines = [BusIMageInline]
 
     def total_tickets_sold(self, bus: Bus):
-        return Ticket.objects.filter(bus=bus).count()
+        return Ticket.objects.filter(bus=bus, departure_date=date.today()).count()
 
     def total_seats(self, bus: Bus):
         return bus.number_of_seats
@@ -43,25 +43,25 @@ class BusAdmin(admin.ModelAdmin):
         return 0
 
     def sold_by_all1zed(self, bus: Bus):
-        return Ticket.objects.filter(bus=bus).count()
+        return Ticket.objects.filter(bus=bus, departure_date=date.today()).count()
 
     def total_all1zed_sales(self, bus):
-        if Ticket.objects.filter(bus=bus).aggregate(Sum('price'))['price__sum'] is None:
+        if Ticket.objects.filter(bus=bus, departure_date=date.today()).aggregate(Sum('price'))['price__sum'] is None:
             return f"K{0}"
         else:
-            return f"K{float(Ticket.objects.filter(bus=bus).aggregate(Sum('price'))['price__sum'])}"
+            return f"K{float(Ticket.objects.filter(bus=bus, departure_date=date.today()).aggregate(Sum('price'))['price__sum'])}"
 
     def your_earnings(self, bus: Bus):
-        total_tickets_sold = Ticket.objects.filter(bus=bus).count()
-        total_earnings = Ticket.objects.filter(bus=bus).aggregate(Sum('price'))['price__sum']
+        total_tickets_sold = Ticket.objects.filter(bus=bus, departure_date=date.today()).count()
+        total_earnings = Ticket.objects.filter(bus=bus, departure_date=date.today()).aggregate(Sum('price'))['price__sum']
         if total_earnings is not None:
             return f'K{float(total_earnings) - (all1zed_commission * total_tickets_sold)}'
         else:
             return 0
 
     def all1zed_earnings(self, bus):
-        total_tickets_sold = Ticket.objects.filter(bus=bus).count()
-        total = Ticket.objects.filter(bus=bus).aggregate(Sum('price'))['price__sum']
+        total_tickets_sold = Ticket.objects.filter(bus=bus, departure_date=date.today()).count()
+        total = Ticket.objects.filter(bus=bus, departure_date=date.today()).aggregate(Sum('price'))['price__sum']
         if total is not None:
             return f'K{(all1zed_commission * float(total_tickets_sold))}'
         else:
