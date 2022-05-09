@@ -79,9 +79,9 @@ class Bus(models.Model):
         """
         query = Bus.objects.filter(bus_company=self.bus_company).count()
         # Computing the bus unique identifier below
-        self.bus_short_name = (self.bus_company.company_name[:4] + str(query + 1)).lower()
+        s = (self.bus_company.company_name[:4] + str(query + 1)).lower()
+        self.bus_short_name = "".join(s.split())
         super(Bus, self).save(*args, **kwargs)
-
 
 class Route(models.Model):
     """A route class e.g from Lusaka to Livingstone"""
