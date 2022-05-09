@@ -106,3 +106,4 @@ class RouteAdmin(admin.ModelAdmin):
 
 admin.site.register(Route, RouteAdmin)
 admin.site.register(Ticket, TicketAdmin)
+admin.site.register(BusCompanyImage)
