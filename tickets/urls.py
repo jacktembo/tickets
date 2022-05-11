@@ -20,6 +20,7 @@ from django.urls import path, include, re_path
 
 admin.AdminSite.site_header = 'All1Zed Bus Ticketing System'
 admin.AdminSite.site_title = 'All1Zed Bus Tickets'
+admin.AdminSite.index_title = 'Greetings From All1Zed! Welcome To The Secure Bus Ticket Portal. How Are You Today?'
 from . import views
 
 urlpatterns = [

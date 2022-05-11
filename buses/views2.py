@@ -216,6 +216,7 @@ class DownloadView(WeasyTemplateResponseMixin, TemplateView):
     def get_pdf_filename(self):
         return f'All1Zed-ticket-{self.ticket_number}.pdf'
 
+
 def scan_ticket(ticket_number):
     ticket = Ticket.objects.filter(ticket_number=ticket_number)
     if ticket.exists() and not ticket.first().scanned:
@@ -251,3 +252,48 @@ def terms(request):
         'terms': terms
     }
     return render(request, 'terms_and_conditions.html', context)
+
+
+def bus_operator(request):
+    buses = Bus.objects.filter(bus_admin=request.user)
+    context = {
+        'buses': buses,
+    }
+    return render(request, 'bus_operator.html', context)
+
+
+def manage_bus(request, pk):
+    bus = Bus.objects.get(pk=pk)
+    total_number_of_seats = bus.number_of_seats
+
+    def seat_status(seat_number):
+        if seat_number in seats_taken:
+            return 'taken'
+        elif seat_number in seats_not_taken:
+            return 'available'
+        else:
+            return 'this is not a valid seat'
+
+    departure_date = date.today()
+    tickets = Ticket.objects.filter(route__bus=bus, departure_date=departure_date)
+    seats_taken = [ticket.seat_number for ticket in tickets]
+    seats_not_taken = [seat for seat in range(1, total_number_of_seats + 1) if seat not in seats_taken]
+    all_seats = sorted(seats_taken + seats_not_taken)
+    seats = {seat: seat_status(seat) for seat in all_seats}
+    context = {
+        'bus': bus, 'departure_date': departure_date, 'seats_taken': seats_taken,
+        'seats_not_taken': seats_not_taken, 'all_seats': all_seats,
+        'seats': seats,
+    }
+    return render(request, 'seat_operation.html', context)
+
+
+def sale_offline(request, bus, seat_number):
+    departure_date = date.today()
+    route = Route.objects.get(id=9)
+    bus = route.bus
+    ticket = Ticket.objects.create(
+        sold_offline=True, passenger_phone='N/A', passenger_first_name='N/A',
+        passenger_last_name='N/A', departure_date=departure_date, route=route,
+        seat_number=seat_number, scanned=True
+    )

@@ -25,7 +25,10 @@ class BusAdmin(admin.ModelAdmin):
         qs = super(BusAdmin, self).get_queryset(request)
         if request.user.is_superuser:
             return qs
-        return qs.filter(bus_company__user=request.user)
+        elif request.user.groups.filter(name='Bus HQ').exists:
+            return qs.filter(bus_company__user=request.user)
+        elif request.user.groups.filter(name='Bus Operator').exists:
+            return qs.filter(bus_admin=request.user)
     list_display = [
         'bus_full_name', 'total_seats', 'total_tickets_sold', 'sold_on_station', 'sold_by_all1zed',
         'total_all1zed_sales', 'your_earnings', 'all1zed_earnings',
@@ -84,7 +87,10 @@ class TicketAdmin(admin.ModelAdmin):
         qs = super(TicketAdmin, self).get_queryset(request)
         if request.user.is_superuser:
             return qs
-        return qs.filter(bus__bus_company__user=request.user)
+        elif request.user.groups.filter(name='Bus HQ').exists:
+            return qs.filter(bus__bus_company__user=request.user)
+        elif request.user.groups.filter(name='Bus Operator').exists:
+            return qs.filter(bus__bus_admin=request.user)
     list_display = [
         'ticket_number', 'passenger_first_name', 'passenger_last_name', 'date_bought', 'departure_date',
         'scanned',

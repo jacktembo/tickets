@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %}
+    Bus Operator Admin Portal
+{% endblock %}
+{% block stylesheet %}
+    <style>
+        main {
+            margin: 7rem 2rem;
+        }
+
+        a {
+            text-decoration: none !important;
+            color: deeppink;
+        }
+
+        .card {
+            margin-bottom: 2rem;
+            border: 1px solid deeppink;
+            background-color: dodgerblue;
+            color: white;
+        }
+     .hint {
+         padding: 1rem;
+     }
+    </style>
+{% endblock %}
+{% block content %}
+    <main>
+        <div class="card">
+            <div class="card-body">
+                Welcome To The Bus Operator Admin Portal. On this Portal, you are able to do the following:
+                <ul class="hint">
+                    <li>View and find all the buses you are admin of.</li>
+                    <li>Mark a bus as fully booked.</li>
+                    <li>Manage Seats for selected bus.</li>
+                    <li>Mark a seat as already sold on station.</li>
+                </ul>
+            </div>
+        </div>
+        <h3>Select A Bus To Manage Below.</h3>
+        <div class="card-group">
+            {% for bus in buses %}
+                <a href="{% url 'manage-bus' pk=bus.pk %}">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title"><strong>{{ bus }}</strong></h5>
+                            <p class="card-text">Click to manage seats.</p>
+                        </div>
+{#                        <div class="card-footer">#}
+{#                            <small class="text-muted">You are the Admin of this bus.</small>#}
+{#                        </div>#}
+                    </div>
+                </a>
+            {% empty %}
+                <p>You are not an admin of any bus yet.</p>
+            {% endfor %}
+
+        </div>
+    </main>
+{% endblock %} %}

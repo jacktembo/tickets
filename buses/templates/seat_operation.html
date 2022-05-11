@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% block title %}
+    Bus Operator Admin Portal
+{% endblock %}
+{% block stylesheet %}
+    <style>
+        h2 {
+            color: dodgerblue;
+            font-weight: bold;
+            width: fit-content;
+            border: 4px solid dodgerblue;
+            padding: 0.5rem;
+            margin: 1rem;
+            text-align: center;
+        }
+
+        main {
+            margin: 7rem 1rem;
+        }
+
+        .modal {
+            z-index: 99999999999999999999999999999999999999999999999999999999999999999999;
+        }
+
+        .clickable {
+            margin: 0.5rem;
+            border: 1px solid deeppink;
+        }
+
+        .structure {
+            display: flex;
+            flex-wrap: wrap;
+            border: 1px solid deeppink;
+        }
+
+        .instructions {
+            padding: 1rem;
+            font-weight: bold;
+            color: grey;
+            border: 1px solid grey;
+            margin: 1rem;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+
+    <main>
+        <h2>{{ bus }}</h2>
+
+        <!-- Button trigger modal -->
+        <div class="structure">
+            {% for seat, status in seats.items %}
+                {% if status == 'available' %}
+                    <button type="button" class="btn btn-primary clickable" data-bs-toggle="modal"
+                            data-bs-target="#available-{{ seat }}">
+                        {{ seat }}
+                    </button>
+                {% endif %}
+                {% if status != 'available' %}
+                    <button type="button" class="btn btn-danger clickable" data-bs-toggle="modal"
+                            data-bs-target="#taken-{{ seat }}">
+                        {{ seat }}
+                    </button>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <div class="card instructions">
+            <div class="card-body">
+                <p>This interface displays {{ bus }} seats. By clicking on a seat number,
+                    you can perform several actions on the clicked seat. Below are the hints to help you:</p>
+                <ol class="hint">
+                    <li>A seat number in Blue color designates that a seat is available.</li>
+                    <li>A seat number in red designates that a seat is already taken.</li>
+                    <li>You can mark a seat as sold on station by clicking it and finally selecting the sold button on
+                        bottom right.
+                    </li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        {% for seat, status in seats.items %}
+            <div class="modal fade" id="available-{{ seat }}" tabindex="-1" aria-labelledby="exampleModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Seat Number {{ seat }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            ...
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Back</button>
+                            {% if status == 'available' %}
+                                <a class="btn btn-warning" href="" role="button">Mark As Sold</a>
+                            {% endif %}
+                            {% if status != 'available' %}
+                                <a class="btn btn-info" href="" role="button">Make Available</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+        {% for seat, status in seats.items %}
+            <div class="modal fade" id="taken-{{ seat }}" tabindex="-1" aria-labelledby="exampleModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Seat Number {{ seat }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            ...
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Back</button>
+                            {% if status == 'available' %}
+                                <a class="btn btn-warning" href="" role="button">Mark As Sold</a>
+                            {% endif %}
+                            {% if status != 'available' %}
+                                <a class="btn btn-info" href="" role="button">Make Available</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+
+    </main>
+{% endblock %} %}
