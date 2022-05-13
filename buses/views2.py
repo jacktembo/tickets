@@ -147,7 +147,7 @@ def payment_approval(request):
         if r.get('response_code', False) == '0':
             kazang.mobile_cash_in(bus_mobile_money_number, deposit)
             ticket.save()
-            message = f"Dear {client_first_name}, Your {bus.bus_company.company_name} Bus Ticket Number is {ticket.ticket_number}. Download your ticket at https://buses.all1zed.com/{ticket.ticket_number}/download. Thank you for using All1Zed Tickets. "
+            message = f"Dear {client_first_name} {client_last_name}, Your {bus.bus_company.company_name} Bus Ticket Number is {ticket.ticket_number}. Download your ticket at https://buses.all1zed.com/{ticket.ticket_number}/download. Thank you for using All1Zed Tickets. "
             sms.send_sms(client_phone_number, message)
             context = {
                 'ticket_number': ticket.ticket_number, 'client_first_name': client_first_name,
