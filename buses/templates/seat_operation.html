@@ -40,6 +40,11 @@
             border: 1px solid grey;
             margin: 1rem;
         }
+        .available-option {
+            color: deeppink;
+            border: 1px solid deeppink;
+        }
+
     </style>
 {% endblock %}
 {% block content %}
@@ -49,7 +54,7 @@
 
         <!-- Button trigger modal -->
         <div class="structure">
-            {% for seat, status in seats.items %}
+            {% for seat, status in seats.first.items %}
                 {% if status == 'available' %}
                     <button type="button" class="btn btn-primary clickable" data-bs-toggle="modal"
                             data-bs-target="#available-{{ seat }}">
@@ -79,22 +84,26 @@
         </div>
 
         <!-- Modal -->
-        {% for seat, status in seats.items %}
+        {% for seat, status in seats.first.items %}
             <div class="modal fade" id="available-{{ seat }}" tabindex="-1" aria-labelledby="exampleModalLabel"
                  aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">Seat Number {{ seat }}</h5>
+                            <h5 class="modal-title" id="exampleModalLabel"><strong>Seat No. {{ seat }}</strong></h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            ...
+                            <div>Ticket No: N/A</div>
+                            <div>First_name: {{ person.first_name }}</div>
+                            <div>Last_name: {{ person.last_name }}</div>
+                            <div>Phone Number: {{ person.phone_number }}</div>
+                            <div>Phone Number: {{ person.phone_number }}</div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Back</button>
                             {% if status == 'available' %}
-                                <a class="btn btn-warning" href="" role="button">Mark As Sold</a>
+                                <a class="btn btn-warning" href="{% url 'sale-offline' pk=bus.pk seat_number=seat %}" role="button">Mark As Sold</a>
                             {% endif %}
                             {% if status != 'available' %}
                                 <a class="btn btn-info" href="" role="button">Make Available</a>
@@ -104,17 +113,26 @@
                 </div>
             </div>
         {% endfor %}
-        {% for seat, status in seats.items %}
+        {% for seat, status in seats.first.items %}
             <div class="modal fade" id="taken-{{ seat }}" tabindex="-1" aria-labelledby="exampleModalLabel"
                  aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">Seat Number {{ seat }}</h5>
+                            <h5 class="modal-title" id="exampleModalLabel"><strong>Seat No. {{ seat }}</strong></h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            ...
+                            {% for item, value in seats.second.items %}
+                               {% if item == seat %}
+                                   <div class="available-option"><strong>Ticket Number:</strong> {{ value.ticket_number }}</div>
+                                   <div class="available-option"><strong>First_name:</strong> {{ value.first_name }}</div>
+                                   <div class="available-option"><strong>Last Name:</strong> {{ value.last_name }}</div>
+                                   <div class="available-option"><strong>Phone Number:</strong> {{ value.phone_number }}</div>
+                                   <div class="available-option"><strong>Already Scanned:</strong> {{ value.already_scanned }}</div>
+                               {% endif %}
+                            {% endfor %}
+
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Back</button>

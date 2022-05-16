@@ -22,6 +22,17 @@
      .hint {
          padding: 1rem;
      }
+     @media screen and (min-width: 900px){
+            .card {
+                margin: 2rem;
+            }
+         .select-bus-text {
+             text-align: center;
+         }
+         .card-group {
+             justify-content: center;
+         }
+        }
     </style>
 {% endblock %}
 {% block content %}
@@ -37,7 +48,7 @@
                 </ul>
             </div>
         </div>
-        <h3>Select A Bus To Manage Below.</h3>
+        <h3 class="select-bus-text">Select A Bus To Manage Below.</h3>
         <div class="card-group">
             {% for bus in buses %}
                 <a href="{% url 'manage-bus' pk=bus.pk %}">

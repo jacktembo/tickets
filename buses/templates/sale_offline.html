@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}
+    Mark Seat As Sold
+{% endblock %}
+{% block stylesheet %}
+    <style>
+        main {
+            margin-top: 7rem;
+        }
+        select {
+            margin: 1rem !important;
+            width: 50vw !important;
+        }
+        button, label {
+            margin-left: 1rem;
+            font-weight: bold;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <main>
+        <form action="{% url 'sale-offline' pk=bus.pk seat_number=seat_number %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="seat-number" value="{{ seat_number }}">
+            <input type="hidden" name="{{ bus }}" value="{{ bus }}">
+            <div class="col-auto">
+             <label for="route-select">Choose A Route To Mark seat No. {{ seat_number }} as sold for {{ bus }}.</label>
+            <select class="form-select" aria-label="Default select example" id="route-select" name="route" required>
+                <option selected>Select Route</option>
+                {% for route in routes %}
+                    <option value="{{ route.id }}">{{ route }}</option>
+                {% endfor %}
+
+            </select>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary mb-3">Mark As Sold</button>
+            </div>
+        </form>
+    </main>
+{% endblock %}

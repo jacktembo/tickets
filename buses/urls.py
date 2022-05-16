@@ -50,5 +50,6 @@ urlpatterns = [
     path('terms', views2.terms, name='terms'),
     path('bus-operator', views2.bus_operator, name='bus-operator'),
     path('<pk>/manage-bus', views2.manage_bus, name='manage-bus'),
+    path('<pk>/<int:seat_number>/sale-offline', views2.sale_offline, name='sale-offline'),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += router.urls

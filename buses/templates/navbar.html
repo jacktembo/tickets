@@ -162,6 +162,9 @@
                 </li>
                 {% if request.user.is_authenticated %}
                     <li class="nav-item">
+                        <a class="nav-link" href="{% url 'bus-operator' %}">Manage Your Buses</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="https://buses.all1zed.com/admin/logout">Logout</a>
                     </li>
                 {% endif %} {% if request.user.is_anonymous %}

@@ -2,7 +2,8 @@ from datetime import datetime, date, time, timedelta
 
 from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
+from django.urls import reverse
 from django.views.generic import TemplateView
 from django_weasyprint import WeasyTemplateResponseMixin
 
@@ -10,7 +11,6 @@ from core import phone_numbers, kazang
 from . import sms
 from .models import *
 from internal.models import *
-
 all1zed_commission = int(All1zedBusCommission.objects.all()[0].commission_per_ticket)
 
 
@@ -253,7 +253,6 @@ def terms(request):
     }
     return render(request, 'terms_and_conditions.html', context)
 
-
 def bus_operator(request):
     buses = Bus.objects.filter(bus_admin=request.user)
     context = {
@@ -274,26 +273,57 @@ def manage_bus(request, pk):
         else:
             return 'this is not a valid seat'
 
+
     departure_date = date.today()
     tickets = Ticket.objects.filter(route__bus=bus, departure_date=departure_date)
     seats_taken = [ticket.seat_number for ticket in tickets]
     seats_not_taken = [seat for seat in range(1, total_number_of_seats + 1) if seat not in seats_taken]
     all_seats = sorted(seats_taken + seats_not_taken)
-    seats = {seat: seat_status(seat) for seat in all_seats}
+    def person_on_seat(seat_number=1):
+        ticket = Ticket.objects.filter(departure_date=departure_date, route__bus=bus, seat_number=int(seat_number))
+        if ticket.exists():
+            person = {
+                'first_name': ticket.first().passenger_first_name, 'last_name': ticket.first().passenger_last_name,
+                'phone_number': ticket.first().passenger_phone, 'ticket_number': ticket.first().ticket_number,
+                'already_scanned': 'Yes' if ticket.first().scanned else 'No'
+            }
+            return person
+        else:
+            person = {
+                'first_name': 'N/A', 'last_name': 'N/A', 'phone_number': 'N/A',
+            }
+            return person
+
+    seats = {'first': {seat: seat_status(seat) for seat in all_seats}, 'second': {seat: person_on_seat(seat) for seat in all_seats}}
+
     context = {
         'bus': bus, 'departure_date': departure_date, 'seats_taken': seats_taken,
         'seats_not_taken': seats_not_taken, 'all_seats': all_seats,
-        'seats': seats,
+        'seats': seats, 'person': person_on_seat(),
     }
     return render(request, 'seat_operation.html', context)
 
 
-def sale_offline(request, bus, seat_number):
-    departure_date = date.today()
-    route = Route.objects.get(id=9)
-    bus = route.bus
-    ticket = Ticket.objects.create(
-        sold_offline=True, passenger_phone='N/A', passenger_first_name='N/A',
-        passenger_last_name='N/A', departure_date=departure_date, route=route,
-        seat_number=seat_number, scanned=True
-    )
+def sale_offline(request, pk, seat_number):
+    bus = Bus.objects.get(pk=pk)
+    seat_number = int(seat_number)
+    routes = Route.objects.filter(bus=bus)
+    if request.method == 'GET':
+
+        context = {
+            'pk': pk, 'seat_number': seat_number, 'routes': routes,
+            'bus': bus,
+        }
+        return render(request, 'sale_offline.html', context)
+
+    elif request.method == 'POST':
+        seat_number = int(request.POST.get('seat-number', False))
+        departure_date = date.today()
+        route = Route.objects.get(id=int(request.POST.get('route', False)))
+
+        Ticket.objects.create(
+            sold_offline=True, scanned=True, passenger_phone='N/A', passenger_first_name='N/A',
+            passenger_last_name='N/A', departure_date=departure_date, route=route,
+            seat_number=seat_number
+        )
+        return HttpResponseRedirect(reverse('manage-bus', kwargs={'pk': pk}))

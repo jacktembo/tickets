@@ -43,28 +43,28 @@ class BusAdmin(admin.ModelAdmin):
         return bus.number_of_seats
 
     def sold_on_station(self, bus: Bus):
-        return 0
+        return Ticket.objects.filter(bus=bus, departure_date=date.today(), sold_offline=True).count()
 
     def sold_by_all1zed(self, bus: Bus):
-        return Ticket.objects.filter(bus=bus, departure_date=date.today()).count()
+        return Ticket.objects.filter(bus=bus, departure_date=date.today(), sold_offline=False).count()
 
     def total_all1zed_sales(self, bus):
-        if Ticket.objects.filter(bus=bus, departure_date=date.today()).aggregate(Sum('price'))['price__sum'] is None:
+        if Ticket.objects.filter(bus=bus, departure_date=date.today(), sold_offline=False).aggregate(Sum('price'))['price__sum'] is None:
             return f"K{0}"
         else:
             return f"K{float(Ticket.objects.filter(bus=bus, departure_date=date.today()).aggregate(Sum('price'))['price__sum'])}"
 
     def your_earnings(self, bus: Bus):
-        total_tickets_sold = Ticket.objects.filter(bus=bus, departure_date=date.today()).count()
-        total_earnings = Ticket.objects.filter(bus=bus, departure_date=date.today()).aggregate(Sum('price'))['price__sum']
+        total_tickets_sold = Ticket.objects.filter(bus=bus, departure_date=date.today(), sold_offline=False).count()
+        total_earnings = Ticket.objects.filter(bus=bus, departure_date=date.today(), sold_offline=False).aggregate(Sum('price'))['price__sum']
         if total_earnings is not None:
             return f'K{float(total_earnings) - (all1zed_commission * total_tickets_sold)}'
         else:
             return 0
 
     def all1zed_earnings(self, bus):
-        total_tickets_sold = Ticket.objects.filter(bus=bus, departure_date=date.today()).count()
-        total = Ticket.objects.filter(bus=bus, departure_date=date.today()).aggregate(Sum('price'))['price__sum']
+        total_tickets_sold = Ticket.objects.filter(bus=bus, departure_date=date.today(), sold_offline=False).count()
+        total = Ticket.objects.filter(bus=bus, departure_date=date.today(), sold_offline=False).aggregate(Sum('price'))['price__sum']
         if total is not None:
             return f'K{(all1zed_commission * float(total_tickets_sold))}'
         else:
