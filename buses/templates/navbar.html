@@ -125,7 +125,8 @@
                             aria-labelledby="navbarScrollingDropdown"
                     >
                         {% if request.user.is_staff %}
-                            <li><a class="dropdown-item" href="{% url 'verify-by-ticket-number' %}">Verify By Ticket Number</a></li>
+                            <li><a class="dropdown-item" href="{% url 'verify-by-ticket-number' %}">Verify By Ticket
+                                Number</a></li>
                             <li><a class="dropdown-item" href="">Verify By QRCode Scanning</a></li>
                         {% endif %}
 
@@ -155,7 +156,11 @@
                         {% if request.user.is_anonymous %}
                             <li><a class="dropdown-item" href="{% url 'terms' %}">Buyer Ts & Cs</a></li>
                         {% endif %}
-
+                        {% if request.user.is_superuser %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'bulk-routes' %}">Bulk Upload</a>
+                            </li>
+                        {% endif %}
 
                     </ul>
                 </li>
@@ -172,6 +177,7 @@
                     <a class="nav-link" href="https://buses.all1zed.com/admin">List Your Bus</a>
                 </li>
             {% endif %}
+
             </ul>
             <form class="d-flex">
                 <input

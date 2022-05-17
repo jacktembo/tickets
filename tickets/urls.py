@@ -33,6 +33,6 @@ urlpatterns = [
     path('auth/', include('djoser.urls.authtoken')),
     path('__debug__/', include('debug_toolbar.urls')),
     re_path(r'^ckeditor/', include('ckeditor_uploader.urls')),
-    path('bulk-routes', views.BulkRoutesUpload.as_view(), name='bulk-routes'),
+    path('upload/routes', views.BulkRoutesUpload.as_view(), name='bulk-routes'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
