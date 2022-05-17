@@ -36,9 +36,11 @@
             color: dodgerblue;
             font-weight: bold;
         }
+
         .card-body {
             background-color: rgb(241, 60, 172);
         }
+
         .card-body h2 {
             color: white;
         }
@@ -57,7 +59,8 @@
                 </p>
             </div>
         </div>
-        <form action="{% url 'bus-company-detail' pk=bus_company.pk %}" method="post" onSubmit="document.getElementById('submit-button').disabled=true; document.getElementById('submit-button').innerHTML='Please Wait...';">
+        <form action="{% url 'bus-company-detail' pk=bus_company.pk %}" method="post"
+              onSubmit="document.getElementById('submit-button').disabled=true; document.getElementById('submit-button').innerHTML='Please Wait...';">
             {% csrf_token %}
             <div class="mb-3">
                 <label for="exampleFormControlInput1" class="form-label">First Name</label>
@@ -81,15 +84,16 @@
             </div>
             <div class="mb-3">
                 <label for="route" class="form-label">Select A Route</label>
-                <select id="route" class="form-select" required name="route">
+                <select id="route" class="form-select js-example-basic-single" required name="route">
                     <option selected disabled>Choose...</option>
                     {% for route in routes %}
                         <option value="{{ route.id }}">{{ route }}</option>
-                        {% empty %}
+                    {% empty %}
                         <option value="">None</option>
                     {% endfor %}
 
                 </select>
+
             </div>
 
             <div class="col-12 mb-3">
@@ -97,4 +101,5 @@
             </div>
         </form>
     </div>
+
 {% endblock %}
