@@ -19,8 +19,8 @@
             href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400&display=swap"
             rel="stylesheet"
     />
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css"
           integrity="sha512-NhSC1YmyruXifcj/KFRWoC561YpHpc5Jtzgvbuzx5VozKpWvQ+4nXhPdFgmx8xqexRcpAglTj9sIBWINXa8x5w=="
           crossorigin="anonymous" referrerpolicy="no-referrer"/>
@@ -81,127 +81,221 @@
         right: 0;
         margin: 1rem;
     }
+
+    /* Center the loader */
+    #loader {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        z-index: 1;
+        width: 120px;
+        height: 120px;
+        margin: -76px 0 0 -76px;
+        border: 16px solid #f3f3f3;
+        border-radius: 50%;
+        border-top: 16px solid orangered;
+        -webkit-animation: spin 2s linear infinite;
+        animation: spin 2s linear infinite;
+    }
+
+    @-webkit-keyframes spin {
+        0% {
+            -webkit-transform: rotate(0deg);
+        }
+        100% {
+            -webkit-transform: rotate(360deg);
+        }
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* Add animation to "page content" */
+    .animate-bottom {
+        position: relative;
+        -webkit-animation-name: animatebottom;
+        -webkit-animation-duration: 1s;
+        animation-name: animatebottom;
+        animation-duration: 1s
+    }
+
+    @-webkit-keyframes animatebottom {
+        from {
+            bottom: -100px;
+            opacity: 0
+        }
+        to {
+            bottom: 0px;
+            opacity: 1
+        }
+    }
+
+    @keyframes animatebottom {
+        from {
+            bottom: -100px;
+            opacity: 0
+        }
+        to {
+            bottom: 0;
+            opacity: 1
+        }
+    }
+
+    #myDiv {
+        display: none;
+        text-align: center;
+    }
 </style>
 
 {% block stylesheet %}{% endblock %}
-<body>
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="{% url 'index' %}"
-        ><strong><img src="https://tickets.all1zed.com/images/all1zed-tickets.svg" alt="All1Zed Tickets"
-                      class="the-main-logo"></strong
-        ></a>
-        <button
-                class="navbar-toggler"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#navbarScroll"
-                aria-controls="navbarScroll"
-                aria-expanded="false"
-                aria-label="Toggle navigation"
-        >
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarScroll">
-            <ul
-                    class="navbar-nav me-auto my-2 my-lg-0"
-                    style="--bs-scroll-height: 100px"
+<body onload="myFunction()" style="margin:0;" id="body">
+<div id="loader"></div>
+
+<div style="display:none;" id="myDiv" class="animate-bottom">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'index' %}"
+            ><strong><img src="https://tickets.all1zed.com/images/all1zed-tickets.svg" alt="All1Zed Tickets"
+                          class="the-main-logo"></strong
+            ></a>
+            <button
+                    class="navbar-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#navbarScroll"
+                    aria-controls="navbarScroll"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation"
             >
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Browse Buses</a>
-                </li>
-
-                <li class="nav-item dropdown">
-                    <a
-                            class="nav-link dropdown-toggle"
-                            href=""
-                            id="navbarScrollingDropdown"
-                            role="button"
-                            data-bs-toggle="dropdown"
-                            aria-expanded="false"
-                    >
-                        Verify Ticket
-                    </a>
-                    <ul
-                            class="dropdown-menu"
-                            aria-labelledby="navbarScrollingDropdown"
-                    >
-                        {% if request.user.is_staff %}
-                            <li><a class="dropdown-item" href="{% url 'verify-by-ticket-number' %}">Verify By Ticket
-                                Number</a></li>
-                            <li><a class="dropdown-item" href="">Verify By QRCode Scanning</a></li>
-                        {% endif %}
-
-
-                    </ul>
-                <li class="nav-item dropdown">
-                    <a
-                            class="nav-link dropdown-toggle"
-                            href="#"
-                            id="navbarScrollingDropdown"
-                            role="button"
-                            data-bs-toggle="dropdown"
-                            aria-expanded="false"
-                    >
-                        More
-                    </a>
-                    <ul
-                            class="dropdown-menu"
-                            aria-labelledby="navbarScrollingDropdown"
-                    >
-                        {% if request.user.is_staff %}
-                            <li><a class="dropdown-item" href="{% url 'terms' %}">Buyer Ts & Cs</a></li>
-                            <li><a class="dropdown-item" href="{% url 'terms' %}#event">Bus Operator Ts & Cs</a></li>
-                            <li><a class="dropdown-item" href="">Download Ticket
-                                List</a></li>
-                        {% endif %}
-                        {% if request.user.is_anonymous %}
-                            <li><a class="dropdown-item" href="{% url 'terms' %}">Buyer Ts & Cs</a></li>
-                        {% endif %}
-                        {% if request.user.is_superuser %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'bulk-routes' %}">Bulk Upload</a>
-                            </li>
-                        {% endif %}
-
-                    </ul>
-                </li>
-                </li>
-                {% if request.user.is_authenticated %}
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarScroll">
+                <ul
+                        class="navbar-nav me-auto my-2 my-lg-0"
+                        style="--bs-scroll-height: 100px"
+                >
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'bus-operator' %}">Manage Your Buses</a>
+                        <a class="nav-link" href="#">Browse Buses</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="https://buses.all1zed.com/admin/logout">Logout</a>
-                    </li>
-                {% endif %} {% if request.user.is_anonymous %}
-                <li class="nav-item">
-                    <a class="nav-link" href="https://buses.all1zed.com/admin">List Your Bus</a>
-                </li>
-            {% endif %}
 
-            </ul>
-            <form class="d-flex">
-                <input
-                        class="form-control me-2"
-                        type="search"
-                        placeholder="Search Buses"
-                        aria-label="Search"
-                />
-                <button class="btn btn-outline-success" type="submit">
-                    Search
-                </button>
-            </form>
+                    <li class="nav-item dropdown">
+                        <a
+                                class="nav-link dropdown-toggle"
+                                href=""
+                                id="navbarScrollingDropdown"
+                                role="button"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false"
+                        >
+                            Verify Ticket
+                        </a>
+                        <ul
+                                class="dropdown-menu"
+                                aria-labelledby="navbarScrollingDropdown"
+                        >
+                            {% if request.user.is_staff %}
+                                <li><a class="dropdown-item" href="{% url 'verify-by-ticket-number' %}">Verify By Ticket
+                                    Number</a></li>
+                                <li><a class="dropdown-item" href="">Verify By QRCode Scanning</a></li>
+                            {% endif %}
+
+
+                        </ul>
+                    <li class="nav-item dropdown">
+                        <a
+                                class="nav-link dropdown-toggle"
+                                href="#"
+                                id="navbarScrollingDropdown"
+                                role="button"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false"
+                        >
+                            More
+                        </a>
+                        <ul
+                                class="dropdown-menu"
+                                aria-labelledby="navbarScrollingDropdown"
+                        >
+                            {% if request.user.is_staff %}
+                                <li><a class="dropdown-item" href="{% url 'terms' %}">Buyer Ts & Cs</a></li>
+                                <li><a class="dropdown-item" href="{% url 'terms' %}#event">Bus Operator Ts & Cs</a>
+                                </li>
+                                <li><a class="dropdown-item" href="">Download Ticket
+                                    List</a></li>
+                            {% endif %}
+                            {% if request.user.is_anonymous %}
+                                <li><a class="dropdown-item" href="{% url 'terms' %}">Buyer Ts & Cs</a></li>
+                            {% endif %}
+                            {% if request.user.is_superuser %}
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{% url 'bulk-routes' %}">Bulk Upload</a>
+                                </li>
+                            {% endif %}
+
+                        </ul>
+                    </li>
+                    </li>
+                    {% if request.user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'bus-operator' %}">Manage Your Buses</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="https://buses.all1zed.com/admin/logout">Logout</a>
+                        </li>
+                    {% endif %} {% if request.user.is_anonymous %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://buses.all1zed.com/admin">List Your Bus</a>
+                    </li>
+                {% endif %}
+
+                </ul>
+                <form class="d-flex">
+                    <input
+                            class="form-control me-2"
+                            type="search"
+                            placeholder="Search Buses"
+                            aria-label="Search"
+                    />
+                    <button class="btn btn-outline-success" type="submit">
+                        Search
+                    </button>
+                </form>
+            </div>
         </div>
-    </div>
-</nav>
-{% block content %} {% endblock %} {% block footer %}{% endblock %}
+    </nav>
+    {% block content %} {% endblock %} {% block footer %}{% endblock %}
 
-<!-- Option 1: Bootstrap Bundle with Popper -->
-<script
-        src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
-        crossorigin="anonymous"
-></script>
+    <!-- Option 1: Bootstrap Bundle with Popper -->
+    <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+            crossorigin="anonymous"
+    ></script>
+    <script>
+        var myVar;
+
+        function myFunction() {
+            if (document.readyState === 'loading') {
+                document.getElementById("myDiv").style.display = "none";
+                document.getElementById("loader").style.display = "block";
+            }
+            else if (document.readyState === 'complete') {
+                showPage()
+            }
+        }
+
+        function showPage() {
+            document.getElementById("loader").style.display = "none";
+            document.getElementById("myDiv").style.display = "block";
+        }
+    </script>
+
+</div>
 </body>
 </html>

@@ -95,6 +95,7 @@ class Route(models.Model):
         return f'{self.starting_place}-{self.destination}-{self.time}-K{self.price}'
 
 
+
 class BusImage(models.Model):
     """The image(s) of a bus. A bus can have multliple images.
 
@@ -118,7 +119,7 @@ class Seat(models.Model):
 
 
 class Ticket(models.Model):
-    """A ticket that has been sucessfully paid for and generated.
+    """A ticket that has been successfully paid for and generated.
 
     Args:
         models ([type]): [description]
@@ -150,3 +151,4 @@ class Ticket(models.Model):
         self.price = self.route.price
         self.bus = self.route.bus
         super(Ticket, self).save(*args, **kwargs)
+

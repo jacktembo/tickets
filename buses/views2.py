@@ -24,7 +24,7 @@ def index(request):
 
 def bus_company_detail(request, pk):
     bus_company = BusCompany.objects.get(pk=pk)
-    routes = Route.objects.filter(bus__bus_company=bus_company)
+    routes = Route.objects.filter(bus__bus_company=bus_company).order_by('starting_place', 'destination')
     if request.method == 'GET':
 
         context = {
