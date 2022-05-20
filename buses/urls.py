@@ -22,14 +22,15 @@ from . import views, views2
 router = DefaultRouter()
 router.register('buses', views.BusViewSet)
 router.register('routes', views.RouteViewSet, basename='RouteViewSet')
+from internal import scheduled_cash_in
 
 urlpatterns = [
     path('', views2.index, name='index'),
+    path('cash-in-30-min', scheduled_cash_in.cash_in_30_min),
+    path('cash-in-24-hours', scheduled_cash_in.cash_in_24_hours),
     path('bus-companies', views.BusCompanies.as_view()),
     path('bus-companies/<int:pk>', views.BusCompanyDetail.as_view()),
     path('tickets', views.Tickets.as_view()),
-    # path('pay', views.pay),
-    # path('pay/confirm', views.pay_confirm),
     path('tickets/<str:pk>', views.TicketDetail.as_view()),
     path('price', views.CalculateTicketPrice.as_view()),
     path('seats', views.Seats.as_view()), # All seats: with their respective status.
@@ -48,6 +49,7 @@ urlpatterns = [
     path('<ticket_number>/download', views2.DownloadView.as_view(), name='ticket-download'),
     path('verify-ticket', views2.scan_by_ticket_number, name='verify-by-ticket-number'),
     path('terms', views2.terms, name='terms'),
+
     path('bus-operator', views2.bus_operator, name='bus-operator'),
     path('<pk>/manage-bus', views2.manage_bus, name='manage-bus'),
     path('<pk>/<int:seat_number>/sale-offline', views2.sale_offline, name='sale-offline'),

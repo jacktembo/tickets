@@ -8,6 +8,7 @@ from django.views.generic import TemplateView
 from django_weasyprint import WeasyTemplateResponseMixin
 
 from core import phone_numbers, kazang
+from core.kazang import session_uuid
 from . import sms
 from .models import *
 from internal.models import *
@@ -108,7 +109,24 @@ def mobile_payment(request):
             deposit = (float(ticket_price) * 100) - (float(all1zed_commission * 100))
             pay = kazang.zamtel_money_pay(client_phone_number, charge)
             if pay.get('response_code', False) == '0':
-                kazang.mobile_cash_in(bus_mobile_money_number, deposit)
+                cash_in = kazang.mobile_cash_in(bus_mobile_money_number, deposit)
+                try:
+                    if cash_in.get('response_code', False) == '0':
+                        Transaction.objects.create(
+                            name='Bus Operator Cash In', type='cash_in', session_uuid=session_uuid,
+                            status='successful', product_id=5305, amount=float(deposit),
+                            phone_number=int(bus_mobile_money_number),
+                            request_reference=cash_in.get('request_reference', None), provider_reference='N/A',
+                        )
+                    else:
+                        Transaction.objects.create(
+                            name='Bus Operator Cash In', type='cash_in', session_uuid=session_uuid,
+                            status='failed', product_id=5305, amount=float(deposit),
+                            phone_number=int(bus_mobile_money_number),
+                            request_reference=cash_in.get('request_reference', None), provider_reference='N/A',
+                        )
+                except:
+                    print('something went wrong')
                 ticket.save()
                 message = f"Dear {client_first_name} {client_last_name}, Your {bus.bus_company.company_name} Bus Ticket Number is {ticket.ticket_number}. Download your ticket at https://buses.all1zed.com/{ticket.ticket_number}/download. Thank you for using All1Zed Tickets."
                 sms.send_sms(client_phone_number, message)
@@ -145,7 +163,24 @@ def payment_approval(request):
     if phone_numbers.get_network(client_phone_number) == 'airtel':
         r = kazang.airtel_pay_query(client_phone_number, charge, reference_number)
         if r.get('response_code', False) == '0':
-            kazang.mobile_cash_in(bus_mobile_money_number, deposit)
+            cash_in = kazang.mobile_cash_in(bus_mobile_money_number, deposit)
+            try:
+                if cash_in.get('response_code', False) == '0':
+                    Transaction.objects.create(
+                        name='Bus Operator Cash In', type='cash_in', session_uuid=session_uuid,
+                        status='successful', product_id=5305, amount=float(deposit),
+                        phone_number=int(bus_mobile_money_number),
+                        request_reference=cash_in.get('request_reference', None), provider_reference='N/A',
+                    )
+                else:
+                    Transaction.objects.create(
+                        name='Bus Operator Cash In', type='cash_in', session_uuid=session_uuid,
+                        status='failed', product_id=5305, amount=float(deposit),
+                        phone_number=int(bus_mobile_money_number),
+                        request_reference=cash_in.get('request_reference', None), provider_reference='N/A',
+                    )
+            except:
+                print('something went wrong')
             ticket.save()
             message = f"Dear {client_first_name} {client_last_name}, Your {bus.bus_company.company_name} Bus Ticket Number is {ticket.ticket_number}. Download your ticket at https://buses.all1zed.com/{ticket.ticket_number}/download. Thank you for using All1Zed Tickets. "
             sms.send_sms(client_phone_number, message)
@@ -165,7 +200,24 @@ def payment_approval(request):
             confirmation_number = approval['confirmation_number']
             debit_approval_confirm = kazang.mtn_debit_approval_confirm(client_phone_number, charge, confirmation_number)
             if debit_approval_confirm['response_code'] == '0':
-                kazang.mobile_cash_in(bus_mobile_money_number, deposit)
+                cash_in = kazang.mobile_cash_in(bus_mobile_money_number, deposit)
+                try:
+                    if cash_in.get('response_code', False) == '0':
+                        Transaction.objects.create(
+                            name='Bus Operator Cash In', type='cash_in', session_uuid=session_uuid,
+                            status='successful', product_id=5305, amount=float(deposit),
+                            phone_number=int(bus_mobile_money_number),
+                            request_reference=cash_in.get('request_reference', None), provider_reference='N/A',
+                        )
+                    else:
+                        Transaction.objects.create(
+                            name='Bus Operator Cash In', type='cash_in', session_uuid=session_uuid,
+                            status='failed', product_id=5305, amount=float(deposit),
+                            phone_number=int(bus_mobile_money_number),
+                            request_reference=cash_in.get('request_reference', None), provider_reference='N/A',
+                        )
+                except:
+                    pass
                 ticket.save()
                 message = f"Dear {client_first_name} {client_last_name}, Your {bus.bus_company.company_name} Bus Ticket Number is {ticket.ticket_number}. Download your ticket at https://buses.all1zed.com/{ticket.ticket_number}/download. Thank you for using All1Zed Tickets."
                 sms.send_sms(client_phone_number, message)

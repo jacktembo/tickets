@@ -22,6 +22,7 @@ django-cors-headers = "*"
 Pillow = "==8.1.2"
 PyMySQL = "==1.0.2"
 django-weasyprint = "*"
+django-crontab = "*"
 
 [dev-packages]
 
