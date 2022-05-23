@@ -283,7 +283,7 @@ def scan_ticket(ticket_number):
 
 
 @api_view()
-def scan_ticket_api(ticket_number):
+def scan_ticket_api(request, ticket_number):
     ticket = Ticket.objects.filter(ticket_number=ticket_number)
     if ticket.exists() and not ticket.first().scanned:
         ticket.update(scanned=True)
