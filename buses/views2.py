@@ -287,9 +287,15 @@ def scan_ticket_api(request, ticket_number):
     ticket = Ticket.objects.filter(ticket_number=ticket_number)
     if ticket.exists() and not ticket.first().scanned:
         ticket.update(scanned=True)
-        return Response({'status': 'success', 'message': 'Verified Successfully'})
+        return Response({'status': 'success', 'message': 'Verified Successfully',
+                         'full_name': ticket.first().passenger_first_name + " " + ticket.first().passenger_last_name,
+                         'phone_number': ticket.first().passenger_phone,
+                         })
     elif ticket.exists() and ticket.first().scanned:
-        return Response({'status': 'failed', 'message': 'Already Scanned'})
+        return Response({'status': 'failed', 'message': 'Already Scanned',
+                         'full_name': ticket.first().passenger_first_name + " " + ticket.first().passenger_last_name,
+                         'phone_number': ticket.first().passenger_phone,
+                         })
     else:
         return Response({'status': 'failed', 'message': 'Invalid Ticket Number'})
 
