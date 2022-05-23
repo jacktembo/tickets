@@ -38,7 +38,7 @@ def cash_in_24_hours(request):
     """
     if failed_transactions_in_24_hours.exists():
         for transaction in failed_transactions_in_24_hours:
-           cash_in = mobile_cash_in(transaction.phone_number, transaction.amount)
+           cash_in = mobile_cash_in(str(transaction.phone_number), transaction.amount)
            if cash_in.get('response_code', False) == '0':
                failed_transactions_in_24_hours.filter(pk=transaction.pk).update(date_time_created=right_now, status='successful')
            else:
