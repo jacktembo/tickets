@@ -2,10 +2,12 @@ from datetime import datetime, date, time, timedelta
 
 from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.views.generic import TemplateView
 from django_weasyprint import WeasyTemplateResponseMixin
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 from core import phone_numbers, kazang
 from core.kazang import session_uuid
@@ -278,6 +280,18 @@ def scan_ticket(ticket_number):
         return 'scanned'
     else:
         return 'invalid'
+
+
+@api_view()
+def scan_ticket_api(ticket_number):
+    ticket = Ticket.objects.filter(ticket_number=ticket_number)
+    if ticket.exists() and not ticket.first().scanned:
+        ticket.update(scanned=True)
+        return Response({'status': 'success', 'message': 'Verified Successfully'})
+    elif ticket.exists() and ticket.first().scanned:
+        return Response({'status': 'failed', 'message': 'Already Scanned'})
+    else:
+        return JsonResponse({'status': 'failed', 'message': 'Invalid Ticket Number'})
 
 
 def scan_by_ticket_number(request):

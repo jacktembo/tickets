@@ -36,7 +36,7 @@ class BulkRoutesUpload(View):
             obj_list = []
 
             for value in sheet.iter_rows(
-                    min_row=3, max_row=int(maximum_rows), min_col=2, max_col=5,
+                    min_row=3, max_row=int(maximum_rows) + 1, min_col=2, max_col=5,
                     values_only=True):
                 routes.append(value)
             bus = Bus.objects.get(bus_full_name=bus)
