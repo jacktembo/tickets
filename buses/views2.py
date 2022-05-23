@@ -293,7 +293,7 @@ def scan_ticket_api(request, ticket_number):
                          })
     elif ticket.exists() and ticket.first().scanned:
         return Response({'status': 'failed', 'message': 'Already Scanned',
-                         'full_name': ticket.first().passenger_first_name + " " + ticket.first().passenger_last_name,
+                         'full_name': f"{ticket.first().passenger_first_name} {ticket.first().passenger_last_name}",
                          'phone_number': ticket.first().passenger_phone,
                          })
     else:
