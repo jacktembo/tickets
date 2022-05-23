@@ -31,7 +31,7 @@ def cash_in_30_min(request):
     return Response('Computation done successfully')
 
 
-# @api_view()
+@api_view()
 def cash_in_24_hours(request):
     """
     Redo the transactions that failed in the previous 24 hours.
