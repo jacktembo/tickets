@@ -291,7 +291,7 @@ def scan_ticket_api(request, ticket_number):
     elif ticket.exists() and ticket.first().scanned:
         return Response({'status': 'failed', 'message': 'Already Scanned'})
     else:
-        return JsonResponse({'status': 'failed', 'message': 'Invalid Ticket Number'})
+        return Response({'status': 'failed', 'message': 'Invalid Ticket Number'})
 
 
 def scan_by_ticket_number(request):
