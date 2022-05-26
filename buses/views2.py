@@ -1,5 +1,3 @@
-from datetime import datetime, date, time, timedelta
-
 from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
