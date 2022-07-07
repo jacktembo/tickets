@@ -25,13 +25,14 @@ class BusAdmin(admin.ModelAdmin):
         """
         qs = super(BusAdmin, self).get_queryset(request)
         def get_bus_company(user_obj):
-            return user_obj.bus_company
+            return BusCompany.objects.get(user=user_obj)
+
         if request.user.is_superuser:
             return qs
         elif request.user.groups.filter(name='Bus Operator').exists():
             return qs.filter(bus_admin=request.user)
         elif request.user.groups.filter(name='Bus HQ').exists():
-            return qs.filter()
+            return qs.filter(bus_company=get_bus_company(request.user))
     list_display = [
         'bus_full_name', 'total_seats', 'total_tickets_sold', 'sold_on_station', 'sold_by_all1zed',
         'total_all1zed_sales', 'your_earnings', 'all1zed_earnings',
