@@ -19,16 +19,19 @@ class BusCompanyImageInline(admin.StackedInline):
 @admin.register(Bus)
 class BusAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
+
         """
         Allowing Bus HQ admins to only access only those buses that were belong to them.
         """
         qs = super(BusAdmin, self).get_queryset(request)
+        def get_bus_company(user_obj):
+            return user_obj.bus_company
         if request.user.is_superuser:
             return qs
-        elif request.user.groups.filter(name='Bus HQ').exists:
-            return qs.filter(bus_company__user=request.user)
-        elif request.user.groups.filter(name='Bus Operator').exists:
+        elif request.user.groups.filter(name='Bus Operator').exists():
             return qs.filter(bus_admin=request.user)
+        elif request.user.groups.filter(name='Bus HQ').exists():
+            return qs.filter()
     list_display = [
         'bus_full_name', 'total_seats', 'total_tickets_sold', 'sold_on_station', 'sold_by_all1zed',
         'total_all1zed_sales', 'your_earnings', 'all1zed_earnings',
