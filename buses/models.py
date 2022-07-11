@@ -153,7 +153,3 @@ class Ticket(models.Model):
         super(Ticket, self).save(*args, **kwargs)
 
 
-class HeroImage(models.Model):
-    date_uploaded = models.DateField(auto_now_add=True)
-    image = models.ImageField(upload_to='HeroImages')
-

@@ -37,6 +37,7 @@ class BusAdmin(admin.ModelAdmin):
         'total_all1zed_sales', 'your_earnings', 'all1zed_earnings',
 
     ]
+    list_filter = ['bus_company']
     inlines = [BusIMageInline]
 
     def total_tickets_sold(self, bus: Bus):
