@@ -134,7 +134,7 @@ prod_db = {
         'USER': 'allzedco_root',
         'PASSWORD': 'Zambia2022!',
         'OPTIONS': {
-          'autocommit': True,
+          'autocommit': True
         },
     }
 }
