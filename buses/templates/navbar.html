@@ -60,6 +60,16 @@
         .navbar-brand img {
             height: 4rem;
             width: fit-content;
+
+        }
+    }
+
+    @-moz-document url-prefix() {
+        .navbar-brand img {
+            height: 4rem;
+            width: fit-content;
+            position: relative;
+            right: 17rem;
         }
     }
 
@@ -202,7 +212,8 @@
                             {% if request.user.is_staff %}
                                 <li><a class="dropdown-item" href="{% url 'verify-by-ticket-number' %}">Verify By Ticket
                                     Number</a></li>
-                                <li><a class="dropdown-item" href="https://scanner.buses.all1zed.com">Verify By QRCode Scanning</a></li>
+                                <li><a class="dropdown-item" href="https://scanner.buses.all1zed.com">Verify By QRCode
+                                    Scanning</a></li>
                             {% endif %}
 
 
@@ -284,8 +295,7 @@
             if (document.readyState === 'loading') {
                 document.getElementById("myDiv").style.display = "none";
                 document.getElementById("loader").style.display = "block";
-            }
-            else if (document.readyState === 'complete') {
+            } else if (document.readyState === 'complete') {
                 showPage()
             }
         }
