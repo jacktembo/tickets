@@ -96,15 +96,15 @@ class Route(models.Model):
 
 
 
-class BusImage(models.Model):
-    """The image(s) of a bus. A bus can have multliple images.
-
-    Args:
-        models ([type]): [description]
-    """
-    bus = models.OneToOneField(Bus, on_delete=models.CASCADE, related_name='image')
-    image = models.ImageField(upload_to='tickets/buses', verbose_name='Upload Bus Image')
-
+# class BusImage(models.Model):
+#     """The image(s) of a bus. A bus can have multliple images.
+#
+#     Args:
+#         models ([type]): [description]
+#     """
+#     bus = models.OneToOneField(Bus, on_delete=models.CASCADE, related_name='image')
+#     image = models.ImageField(upload_to='tickets/buses', verbose_name='Upload Bus Image')
+#
 
 class Seat(models.Model):  
     """A seat on a bus. One seat for one passenger.
