@@ -62,7 +62,7 @@ class Bus(models.Model):
     bus_admin = models.ForeignKey(User, on_delete=models.CASCADE)
     bus_company = models.ForeignKey(BusCompany, on_delete=models.CASCADE, related_name='buses')
     bus_full_name = models.CharField(max_length=50)
-    bus_short_name = models.CharField(max_length=20, editable=False)
+    bus_short_name = models.CharField(max_length=20, editable=False, primary_key=True)
     number_of_seats = models.IntegerField()
     mobile_money_number = models.CharField(max_length=10, help_text='Enter the 10 digit Mobile Money number for receiving money.')
 
