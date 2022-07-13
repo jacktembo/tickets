@@ -62,7 +62,7 @@ class Bus(models.Model):
     bus_admin = models.ForeignKey(User, on_delete=models.CASCADE)
     bus_company = models.ForeignKey(BusCompany, on_delete=models.CASCADE, related_name='buses')
     bus_full_name = models.CharField(max_length=50)
-    # bus_short_name = models.CharField(max_length=20, editable=False)
+    bus_short_name = models.CharField(max_length=20, editable=False)
     number_of_seats = models.IntegerField()
     mobile_money_number = models.CharField(max_length=10, help_text='Enter the 10 digit Mobile Money number for receiving money.')
 
@@ -96,15 +96,15 @@ class Route(models.Model):
 
 
 
-# class BusImage(models.Model):
-#     """The image(s) of a bus. A bus can have multliple images.
-#
-#     Args:
-#         models ([type]): [description]
-#     """
-#     bus = models.OneToOneField(Bus, on_delete=models.CASCADE, related_name='image')
-#     image = models.ImageField(upload_to='tickets/buses', verbose_name='Upload Bus Image')
-#
+class BusImage(models.Model):
+    """The image(s) of a bus. A bus can have multliple images.
+
+    Args:
+        models ([type]): [description]
+    """
+    bus = models.OneToOneField(Bus, on_delete=models.CASCADE, related_name='image')
+    image = models.ImageField(upload_to='tickets/buses', verbose_name='Upload Bus Image')
+
 
 class Seat(models.Model):  
     """A seat on a bus. One seat for one passenger.

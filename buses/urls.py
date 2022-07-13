@@ -20,28 +20,28 @@ from rest_framework.routers import DefaultRouter
 
 from . import views, views2
 router = DefaultRouter()
-# router.register('buses', views.BusViewSet)
-# router.register('routes', views.RouteViewSet, basename='RouteViewSet')
+router.register('buses', views.BusViewSet)
+router.register('routes', views.RouteViewSet, basename='RouteViewSet')
 from internal import scheduled_cash_in
 
 urlpatterns = [
     path('', views2.index, name='index'),
     path('cash-in-30-min', scheduled_cash_in.cash_in_30_min),
     path('cash-in-24-hours', scheduled_cash_in.cash_in_24_hours),
-    # path('bus-companies', views.BusCompanies.as_view()),
-    # path('bus-companies/<int:pk>', views.BusCompanyDetail.as_view()),
-    # path('tickets', views.Tickets.as_view()),
-    # path('tickets/<str:pk>', views.TicketDetail.as_view()),
-    # path('price', views.CalculateTicketPrice.as_view()),
-    # path('seats', views.Seats.as_view()), # All seats: with their respective status.
-    # path('tickets-sold/', views.TicketsSold.as_view()), # Using filter backends.
-    # path('seats-available/<int:route_id>/<departure_date>', views.seats_available),
-    # path('seats-taken-count/<int:route_id>/<departure_date>', views.number_of_seats_taken),
-    # path('seats-taken/<int:route_id>/<departure_date>', views.seats_taken),
-    # path('bus-status/<int:route_id>/<departure_date>', views.is_fully_booked), # Whether a bus is fully booked or not.
-    # path('seat-status/<int:route_id>/<departure_date>/<int:seat_number>', views.is_seat_available), # Whether a seat is available or booked.
-    # path('sale-offline/<int:route_id>/<departure_date>/<int:seat_number>', views.sale_offline),
-    # path('scan/<ticket_number>', views.ScanView.as_view()),
+    path('bus-companies', views.BusCompanies.as_view()),
+    path('bus-companies/<int:pk>', views.BusCompanyDetail.as_view()),
+    path('tickets', views.Tickets.as_view()),
+    path('tickets/<str:pk>', views.TicketDetail.as_view()),
+    path('price', views.CalculateTicketPrice.as_view()),
+    path('seats', views.Seats.as_view()), # All seats: with their respective status.
+    path('tickets-sold/', views.TicketsSold.as_view()), # Using filter backends.
+    path('seats-available/<int:route_id>/<departure_date>', views.seats_available),
+    path('seats-taken-count/<int:route_id>/<departure_date>', views.number_of_seats_taken),
+    path('seats-taken/<int:route_id>/<departure_date>', views.seats_taken),
+    path('bus-status/<int:route_id>/<departure_date>', views.is_fully_booked), # Whether a bus is fully booked or not.
+    path('seat-status/<int:route_id>/<departure_date>/<int:seat_number>', views.is_seat_available), # Whether a seat is available or booked.
+    path('sale-offline/<int:route_id>/<departure_date>/<int:seat_number>', views.sale_offline),
+    path('scan/<ticket_number>', views.ScanView.as_view()),
     path('<int:pk>/detail', views2.bus_company_detail, name='bus-company-detail'),
     path('select-seat', views2.mobile_payment, name='select-seat'),
     path('payment-approval', views2.payment_approval, name='payment-approval'),
