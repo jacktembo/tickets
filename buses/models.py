@@ -77,9 +77,11 @@ class Bus(models.Model):
         """
         Overriding the save method to create calculated field values.
         """
-        query = Bus.objects.filter(bus_company=self.bus_company).count()
+        # query = Bus.objects.filter(bus_company=self.bus_company).count()
+        alphabet = string.digits
+        digits = ''.join(secrets.choice(alphabet) for i in range(4))
         # Computing the bus unique identifier below
-        s = (self.bus_company.company_name[:4] + str(query + 1)).lower()
+        s = (self.bus_company.company_name[:4] + str(digits)).lower()
         self.bus_short_name = "".join(s.split())
         super(Bus, self).save(*args, **kwargs)
 
