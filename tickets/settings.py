@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-h=-w4r^+9xst3kjp)81q12a@tzt0j&da2*c#ht&pt-x1a278)-'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 CORS_ALLOW_ALL_ORIGINS = True
 
@@ -124,7 +124,10 @@ WSGI_APPLICATION = 'tickets.wsgi.application'
 dev_db = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3')
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'options': {
+            'timeout': 20
+        }
     }
 }
 prod_db = {
