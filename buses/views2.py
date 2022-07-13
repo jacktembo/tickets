@@ -18,7 +18,7 @@ all1zed_commission = int(All1zedBusCommission.objects.all()[0].commission_per_ti
 def index(request):
     bus_companies = BusCompany.objects.all()
     context = {
-        'buzs_companies': bus_companies
+        'bus_companies': bus_companies
     }
     return render(request, 'index.html', context)
 
