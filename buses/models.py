@@ -79,7 +79,7 @@ class Bus(models.Model):
         """
         # query = Bus.objects.filter(bus_company=self.bus_company).count()
         alphabet = string.digits
-        digits = ''.join(secrets.choice(alphabet) for i in range(4))
+        digits = ''.join(secrets.choice(alphabet) for i in range(8))
         # Computing the bus unique identifier below
         s = (self.bus_company.company_name[:4] + str(digits)).lower()
         self.bus_short_name = "".join(s.split())
